@@ -1,9 +1,12 @@
+
+const basePath = window.location.hostname.includes("github.io") ? "/seedle/" : "";
+
 async function loadComponent(targetId, file) {
   const el = document.getElementById(targetId);
   if (!el) return;
 
   try {
-    const response = await fetch(file);
+    const response = await fetch(basePath + file);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const content = await response.text();
     el.innerHTML = content;
@@ -17,9 +20,3 @@ document.addEventListener("DOMContentLoaded", () => {
   loadComponent("header", "header.html");
   loadComponent("footer", "footer.html");
 });
-
-if (window.location.hostname.includes("github.io")) {
-  const base = document.createElement("base");
-  base.href = "/seedle/";
-  document.head.appendChild(base);
-}
