@@ -16,7 +16,7 @@ const cityCoordinates = {
     "Victoria": { top: "76%", left: "12%" }
   },
   "Nunavut": {
-    "Arctic Bay": { top: "46%", left: "72%" }
+    "Arctic Bay": { top: "32%", left: "53.5%" }
   }
 };
 
