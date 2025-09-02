@@ -17,3 +17,7 @@ async function loadComponent(targetId, file) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  loadComponent("header", "header.html");
+  loadComponent("footer", "footer.html");
+});
