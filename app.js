@@ -17,3 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadComponent("header", "header.html");
   loadComponent("footer", "footer.html");
 });
+
+if (window.location.hostname.includes("github.io")) {
+  const base = document.createElement("base");
+  base.href = "/seedle/";
+  document.head.appendChild(base);
+}
