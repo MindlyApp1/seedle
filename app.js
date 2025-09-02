@@ -3,7 +3,7 @@ async function loadComponent(targetId, file) {
   if (!el) return;
 
   try {
-    const response = await fetch(`src/components/${file}`);
+    const response = await fetch(`components/${file}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const content = await response.text();
     el.innerHTML = content;
