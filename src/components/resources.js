@@ -1,7 +1,7 @@
 const citySelect = document.getElementById("citySelect");
 const resourcesList = document.getElementById("resourcesList");
 
-const excelFilePath = "/assets/resources.xlsx";
+const excelFilePath = "../../assets/resources.xlsx";
 
 async function loadExcel() {
   const response = await fetch(excelFilePath);
