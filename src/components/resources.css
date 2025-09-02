@@ -1,0 +1,84 @@
+.resources {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 2rem;
+  flex: 1;
+}
+
+.resources-container {
+  max-width: 1000px;
+  width: 100%;
+  text-align: center;
+}
+
+.resources-container h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2e7d32;
+}
+
+.resources-container p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+#citySelect {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 3rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+#citySelect:focus {
+  border-color: #2e7d32;
+}
+
+.resources-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.resource-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.resource-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #2e7d32;
+}
+
+.resource-card p {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.resource-card a {
+  display: inline-block;
+  color: #2e7d32;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.resource-card a:hover {
+  text-decoration: underline;
+}
