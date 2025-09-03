@@ -82,6 +82,35 @@
   justify-content: center;
   align-items: center;
   animation: float 6s ease-in-out infinite;
+  position: relative;
+  z-index: 1; /* keeps the image above the blob */
+}
+
+.hero-image::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;     /* adjust blob size */
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,200,100,0.5) 0%, rgba(0,200,100,0) 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1; /* places it behind the image */
+  filter: blur(40px); /* softens the edges */
+}
+
+.hero-blob {
+  position: absolute;
+  top: 75px;   /* adjust placement */
+  left: 660px; /* adjust placement */
+  z-index: 0;   /* sits behind hero image */
+  opacity: 0.9; /* optional */
+}
+
+.hero-blob img {
+  width: 750px;   /* adjust size */
+  height: 750px;
 }
 
 .how-it-works, .why-seedle {
