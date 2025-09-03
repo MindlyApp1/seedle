@@ -8,8 +8,8 @@ let resources = [];
 
 const cityCoordinates = {
   "Ontario": {
-    "Toronto": { top: "70%", left: "58%" },
-    "Ottawa": { top: "63%", left: "65%" }
+    "Toronto": { top: "75%", left: "65%" },
+    "Ottawa": { top: "71%", left: "66%" }
   },
   "British Columbia": {
     "Vancouver": { top: "72%", left: "14%" },
@@ -41,16 +41,16 @@ function renderProvinceCities(province) {
   clearCityPins();
   provinceNameEl.textContent = `${province} - Online Resources`;
   resourcesList.innerHTML = "";
+
   const filtered = resources.filter(
     r => r.Province.toLowerCase() === province.toLowerCase()
   );
+
   if (filtered.length === 0) {
     resourcesList.innerHTML = `<p>No resources found for ${province}.</p>`;
-    return;
-  }
-  const withCities = filtered.filter(r => r.City && r.City.trim() !== "");
-  const noCities = filtered.filter(r => !r.City || r.City.trim() === "");
-  if (noCities.length > 0) {
+  } else {
+
+    const noCities = filtered.filter(r => !r.City || r.City.trim() === "");
     noCities.forEach(r => {
       const card = document.createElement("div");
       card.className = "resource-card";
@@ -63,18 +63,27 @@ function renderProvinceCities(province) {
       resourcesList.appendChild(card);
     });
   }
-  const cities = [...new Set(withCities.map(r => r.City))];
-  cities.forEach(city => {
-    const coords = cityCoordinates[province]?.[city];
-    if (!coords) return;
+
+  const cities = cityCoordinates[province] || {};
+  Object.entries(cities).forEach(([city, coords]) => {
     const cityPin = document.createElement("div");
     cityPin.className = "city-pin";
+
+    const hasResources = filtered.some(
+      r => r.City && r.City.toLowerCase() === city.toLowerCase()
+    );
+    if (!hasResources) {
+      cityPin.classList.add("no-resource");
+    }
+
     cityPin.dataset.city = city;
     cityPin.dataset.province = province;
     cityPin.style.top = coords.top;
     cityPin.style.left = coords.left;
-    cityPin.title = city;
+    cityPin.title = hasResources ? city : `${city} (no resources)`;
+
     mapContainer.appendChild(cityPin);
+
     cityPin.addEventListener("click", () => {
       renderCityResources(province, city);
     });
@@ -82,7 +91,7 @@ function renderProvinceCities(province) {
 }
 
 function renderCityResources(province, city) {
-  provinceNameEl.textContent = `${province} – ${city}`;
+  provinceNameEl.textContent = `${province} - ${city}`;
   resourcesList.innerHTML = "";
   const filtered = resources.filter(
     r =>
