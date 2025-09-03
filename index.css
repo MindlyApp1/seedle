@@ -275,7 +275,7 @@
 
 @media (orientation: portrait) {
   .hero-blob {
-    top: 23%;
+    top: 27%;
     left: 80%;
     transform: translate(-70%, -50%);
     width: 60%;
