@@ -100,7 +100,7 @@
   position: absolute;
   width: 12px;
   height: 12px;
-  background: red;
+  background: blue;
   border-radius: 50%;
   cursor: pointer;
   transform: translate(-50%, -50%);

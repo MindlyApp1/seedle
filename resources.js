@@ -8,12 +8,10 @@ let resources = [];
 
 const cityCoordinates = {
   "Ontario": {
-    "Toronto": { top: "75%", left: "65%" },
-    "Ottawa": { top: "71%", left: "66%" }
+    "Toronto": { top: "75%", left: "65%" }
   },
   "British Columbia": {
-    "Vancouver": { top: "72%", left: "14%" },
-    "Victoria": { top: "76%", left: "12%" }
+    "Vancouver": { top: "59%", left: "15.5%" }
   },
   "Nunavut": {
     "Arctic Bay": { top: "32%", left: "53.5%" }
