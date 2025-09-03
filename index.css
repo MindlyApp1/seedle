@@ -103,7 +103,7 @@
 }
 
 .hero-blob {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 79.5%;
   transform: translate(-70%, -50%);
@@ -275,7 +275,7 @@
 
 @media (max-width: 768px) {
   .hero-blob {
-    top: 25%;
+    top: 5%;
     left: 50%;
     transform: translate(-50%, -50%);
     max-width: 30rem;
