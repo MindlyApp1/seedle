@@ -1,4 +1,3 @@
-
 const basePath = window.location.hostname.includes("github.io") ? "/seedle/" : "";
 
 async function loadComponent(targetId, file) {
@@ -19,4 +18,23 @@ async function loadComponent(targetId, file) {
 document.addEventListener("DOMContentLoaded", () => {
   loadComponent("header", "header.html");
   loadComponent("footer", "footer.html");
+  checkOrientation();
 });
+
+function checkOrientation() {
+  let overlay = document.getElementById("orientation-overlay");
+
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "orientation-overlay";
+      overlay.classList.add("orientation-blocker");
+      overlay.innerHTML = "<p>Please rotate your device back to portrait mode.</p>";
+      document.body.appendChild(overlay);
+    }
+  } else {
+    if (overlay) overlay.remove();
+  }
+}
+
+window.addEventListener("resize", checkOrientation);
