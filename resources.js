@@ -39,7 +39,7 @@ function clearCityPins() {
 
 function renderProvinceCities(province) {
   clearCityPins();
-  provinceNameEl.textContent = province;
+  provinceNameEl.textContent = `${province} - Online Resources`;
   resourcesList.innerHTML = "";
   const filtered = resources.filter(
     r => r.Province.toLowerCase() === province.toLowerCase()
