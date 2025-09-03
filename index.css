@@ -4,11 +4,11 @@
   padding: 1rem 2.2rem;
   background: #47a358;
   color: #fff;
-  border-radius: 100px;
+  border-radius: 6.25rem;
   font-weight: 600;
   font-size: 1.1rem;
   text-decoration: none;
-  box-shadow: 0 6px 15px rgba(71, 163, 88, 0.3);
+  box-shadow: 0 0.375rem 0.9375rem rgba(71, 163, 88, 0.3);
   transition: all 0.3s ease;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
@@ -16,8 +16,8 @@
 
 .cta-btn:hover {
   background: #2f7c3a;
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(47, 124, 58, 0.4);
+  transform: translateY(-0.125rem) scale(1.05);
+  box-shadow: 0 0.5rem 1.25rem rgba(47, 124, 58, 0.4);
 }
 
 .hero {
@@ -25,7 +25,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 6rem 10%;
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
   gap: 3rem;
   border-radius: 1.5rem;
@@ -40,9 +40,9 @@
   font-weight: 700;
   color: #0b5646;
   line-height: 1.3;
-  max-width: 650px;
+  max-width: 40.625rem;
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translateX(-1.875rem);
   animation: slideIn 1s ease-out forwards;
   animation-delay: 0.2s;
   font-family: 'Poppins', sans-serif;
@@ -57,7 +57,7 @@
   line-height: 1.6;
   color: #2f3e2f;
   margin-top: 1rem;
-  max-width: 500px;
+  max-width: 31.25rem;
   opacity: 0;
   animation: fadeIn 1s ease-out forwards;
   animation-delay: 0.6s;
@@ -71,8 +71,8 @@
 }
 
 .hero-image img {
-  width: 500px;
-  height: 500px;
+  width: 31.25rem;
+  height: 31.25rem;
   flex-shrink: 0;
   z-index: 1;
 }
@@ -92,31 +92,31 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 400px;
-  height: 400px;
+  width: 25rem;
+  height: 25rem;
   background: radial-gradient(circle, rgba(0,200,100,0.5) 0%, rgba(0,200,100,0) 70%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 0;
-  filter: blur(40px);
+  filter: blur(2.5rem);
 }
 
 .hero-blob {
   position: absolute;
-  top: 75px;   /* adjust placement */
-  left: 660px; /* adjust placement */
-  z-index: 0;   /* sits behind hero image */
-  opacity: 0.9; /* optional */
+  top: 4.6875rem;
+  left: 41.25rem;
+  z-index: 0;
+  opacity: 0.9;
 }
 
 .hero-blob img {
-  width: 750px;   /* adjust size */
-  height: 750px;
+  width: 46.875rem;
+  height: 46.875rem;
 }
 
 .how-it-works, .why-seedle {
   padding: 4rem 10%;
-  max-width: 1200px;
+  max-width: 75rem;
   margin: 0 auto;
   margin-top: 2.5rem;
   text-align: center;
@@ -139,27 +139,27 @@
 
 .step {
   position: relative;
-  width: 260px;
-  height: 260px;
+  width: 16.25rem;
+  height: 16.25rem;
   background: white;
   border-radius: 50%;
   padding: 2rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(1.25rem);
 }
 
 .step-number {
   position: absolute;
-  top: 24px;
-  left: 20px;
-  width: 36px;
-  height: 36px;
+  top: 1.5rem;
+  left: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   background: #b08963;
   color: white;
@@ -168,12 +168,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.15);
 }
 
 .step:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transform: translateY(-0.375rem);
+  box-shadow: 0 0.625rem 1.5625rem rgba(0,0,0,0.1);
 }
 
 .step i {
@@ -195,13 +195,13 @@
   line-height: 1.4;
   color: #2f3e2f;
   font-family: 'Inter', sans-serif;
-  max-width: 180px;
+  max-width: 11.25rem;
   text-align: center;
 }
 
 .step, .benefit {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(1.25rem);
   transition: all 0.8s ease-out;
 }
 
@@ -218,21 +218,21 @@
 }
 
 .benefit {
-  flex: 1 1 280px;
-  max-width: 320px;
+  flex: 1 1 17.5rem;
+  max-width: 20rem;
   background: white;
   border-radius: 1rem;
   padding: 2rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(1.25rem);
   text-align: left;
 }
 
 .benefit:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  transform: translateY(-0.375rem);
+  box-shadow: 0 0.75rem 1.75rem rgba(0,0,0,0.12);
 }
 
 .benefit i {
@@ -265,5 +265,5 @@
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-1.25rem); }
 }
