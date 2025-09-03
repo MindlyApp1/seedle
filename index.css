@@ -273,7 +273,7 @@
   50% { transform: translateY(-1.25rem); }
 }
 
-@media (max-width: 768px) {
+@media (orientation: portrait) {
   .hero-blob {
     top: 23%;
     left: 80%;
