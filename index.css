@@ -275,13 +275,10 @@
 
 @media (max-width: 768px) {
   .hero-blob {
-    position: absolute;
-    top: 15%;
-    left: 37%;
+    top: 23%;
+    left: 80%;
     transform: translate(-70%, -50%);
-    width: 100%;
+    width: 60%;
     max-width: 46.875rem;
-    z-index: 0;
-    pointer-events: none;
   }
 }
