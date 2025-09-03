@@ -14,7 +14,7 @@ main {
   flex: 1;
 }
 
-@media screen and (orientation: landscape) {
+@media screen and (orientation: landscape) and (pointer: coarse) {
   body::before {
     content: "Please rotate your device to portrait mode for the best experience.";
     position: fixed;
@@ -28,10 +28,12 @@ main {
     color: black;
     text-align: center;
     padding: 2rem;
+    pointer-events: all;
   }
 
   body {
     overflow: hidden;
     touch-action: none;
+    pointer-events: none;
   }
 }
