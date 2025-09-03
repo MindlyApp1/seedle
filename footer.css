@@ -5,7 +5,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   font-size: 0.95rem;
-  color: #2f3e2f;
+  color: black;
   position: relative;
   z-index: 1;
 }
@@ -22,7 +22,7 @@ footer {
 .footer-right a {
   text-decoration: none;
   font-size: 1.3rem;
-  color: #2f3e2f;
+  color: black;
   transition: color 0.2s ease;
 }
 

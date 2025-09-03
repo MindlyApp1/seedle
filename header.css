@@ -6,7 +6,7 @@ header {
   background: transparent;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 1;
 }
 
 .logo {
@@ -20,16 +20,22 @@ header {
   height: 50px;
 }
 
+nav {
+  margin-left: auto;
+}
+
 nav ul {
   list-style: none;
   display: flex;
-  gap: 2rem;
+  gap: 3rem;
+  margin: 0;
+  padding: 0;
 }
 
 nav ul li a {
   text-decoration: none;
   font-size: 1rem;
-  color: #2f3e2f;
+  color: black;
   font-weight: 500;
   transition: color 0.2s ease;
 }
