@@ -272,3 +272,12 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-1.25rem); }
 }
+
+@media (max-width: 768px) {
+  .hero-blob {
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 30rem;
+  }
+}
