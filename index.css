@@ -80,12 +80,24 @@
   position: relative;
   max-width: 100%;
   margin-top: -2.75rem;
+}
+
+#seedle-flower.sway {
   animation: floatSway 6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes floatSway {
+  0%   { transform: rotate(0deg) translateY(0); }
+  25%  { transform: rotate(-2deg) translateY(-3px); }
+  50%  { transform: rotate(0deg) translateY(0); }
+  75%  { transform: rotate(2deg) translateY(-3px); }
+  100% { transform: rotate(0deg) translateY(0); }
 }
 
 .hero-image img {
   width: 100%;
-  max-width: 31.25rem;
+  max-width: 39rem;
   height: auto;
   position: relative;
   z-index: 1;
@@ -98,7 +110,11 @@
   left: 50%;
   width: 26rem;
   height: 26rem;
-  background: radial-gradient(circle, rgba(255,200,50,0.45) 0%, rgba(255,200,50,0) 75%);
+    background: radial-gradient(
+    circle,
+    rgba(255, 200, 50, 0.72) 0%,
+    rgba(255, 200, 50, 0) 75%
+  );
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 0;
@@ -108,8 +124,8 @@
 
 .hero-blob {
   position: absolute;
-  top: 54%;
-  left: 81%;
+  top: 52.5%;
+  left: 80.5%;
   transform: translate(-70%, -50%);
   width: 100%;
   max-width: 46.875rem;
@@ -272,10 +288,6 @@
   50% { transform: translateY(0) rotate(0deg); }
   75% { transform: translateY(-0.5rem) rotate(-2deg); }
 }
-
-
-
-
 
 @media (orientation: portrait) {
   .hero-blob {

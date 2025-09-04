@@ -19,6 +19,32 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.3 });
 
-document.querySelectorAll('.step, .benefit').forEach(el => {
-  observer.observe(el);
+document.addEventListener("DOMContentLoaded", () => {
+  const flower = document.getElementById("seedle-flower");
+
+  const frames = [
+    "assets/flower1.png",
+    "assets/flower2.png",
+    "assets/flower3.png",
+    "assets/flower4.png"
+  ];
+
+  let i = 0;
+
+  function animateSeed() {
+    if (i < frames.length) {
+      flower.src = frames[i];
+      if (i === frames.length - 1) {
+        setTimeout(() => {
+          flower.classList.add("sway");
+        }, 1000);
+      } else {
+        setTimeout(animateSeed, 1000); 
+      }
+
+      i++;
+    }
+  }
+
+  animateSeed();
 });
