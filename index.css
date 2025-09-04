@@ -165,7 +165,7 @@
 .step.show {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 0.8s ease-out;
+  transition: opacity 1.2s ease-out;
 }
 
 .step-number {
@@ -218,28 +218,25 @@
 .benefit {
   flex: 1 1 17.5rem;
   max-width: 20rem;
-  background: white;
+  background: #fff;
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
   text-align: left;
+  display: flex;
+  flex-direction: column;
   opacity: 0;
-  transform: translateX(40px) scale(0.95);
-  transition: none;
+  transform: translateY(30px);
 }
 
 .benefit.show {
-  opacity: 1;
-  transform: translateX(0) scale(1);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  animation: benefitFadeUp 0.9s ease-out forwards;
 }
 
-
-.benefit:nth-child(1).show { transition-delay: 0.2s; }
-.benefit:nth-child(2).show { transition-delay: 0.4s; }
-.benefit:nth-child(3).show { transition-delay: 0.6s; }
-.benefit:nth-child(4).show { transition-delay: 0.8s; }
-
+@keyframes benefitFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .benefit i {
   font-size: 2rem;

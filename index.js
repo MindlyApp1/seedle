@@ -1,16 +1,23 @@
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      const items = entry.target.parentElement.querySelectorAll('.step, .benefit');
-      items.forEach((item, i) => {
+
+      const steps = entry.target.parentElement.querySelectorAll('.step');
+      steps.forEach((step, i) => {
         setTimeout(() => {
-          item.classList.add('show');
-        }, i * 200);
+          step.classList.add('show');
+        }, i * 500);
       });
+
+      const benefits = entry.target.parentElement.querySelectorAll('.benefit');
+      benefits.forEach(benefit => {
+        benefit.classList.add('show');
+      });
+
       observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.2 });
+}, { threshold: 0.3 });
 
 document.querySelectorAll('.step, .benefit').forEach(el => {
   observer.observe(el);
