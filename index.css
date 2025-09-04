@@ -159,7 +159,13 @@
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
-  transform: translateY(1.25rem);
+  transform: translateY(20px);
+}
+
+.step.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease-out;
 }
 
 .step-number {
@@ -177,11 +183,6 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.15);
-}
-
-.step:hover {
-  transform: translateY(-0.375rem);
-  box-shadow: 0 0.625rem 1.5625rem rgba(0,0,0,0.1);
 }
 
 .step i {
@@ -207,17 +208,6 @@
   text-align: center;
 }
 
-.step, .benefit {
-  opacity: 0;
-  transform: translateY(1.25rem);
-  transition: all 0.8s ease-out;
-}
-
-.step.show, .benefit.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .why-seedle .benefits {
   display: flex;
   justify-content: center;
@@ -232,16 +222,24 @@
   border-radius: 1.5rem;
   padding: 2rem;
   box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  opacity: 0;
-  transform: translateY(1.25rem);
   text-align: left;
+  opacity: 0;
+  transform: translateX(40px) scale(0.95);
+  transition: none;
 }
 
-.benefit:hover {
-  transform: translateY(-0.375rem);
-  box-shadow: 0 0.75rem 1.75rem rgba(0,0,0,0.12);
+.benefit.show {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
+
+
+.benefit:nth-child(1).show { transition-delay: 0.2s; }
+.benefit:nth-child(2).show { transition-delay: 0.4s; }
+.benefit:nth-child(3).show { transition-delay: 0.6s; }
+.benefit:nth-child(4).show { transition-delay: 0.8s; }
+
 
 .benefit i {
   font-size: 2rem;
