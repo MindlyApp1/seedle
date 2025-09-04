@@ -93,7 +93,7 @@
   font-family: 'Playfair Display', serif;
   opacity: 0;
   animation: fadeIn 1.5s ease-out forwards;
-  animation-delay: 1.2s;
+  animation-delay: 1.6s;
 }
 
 @keyframes fadeIn {
