@@ -25,7 +25,8 @@ body {
 }
 
 #logo {
-  height: 50px;
+  height: 65px;
+  width: 200px;
 }
 
 nav {
@@ -49,5 +50,5 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-  color: #256629;
+  color: #10824c;
 }
