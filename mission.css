@@ -28,6 +28,19 @@
   font-size: 3rem;
   line-height: 1.3;
   color: #10824c;
+  position: relative;
+  display: inline-block;
+}
+
+.mission-container h1::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: #10824c;
+  border-radius: 2px;
 }
 
 .mission-container p {
