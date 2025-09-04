@@ -5,6 +5,24 @@ const provinceNameEl = document.getElementById("province-name");
 const excelFilePath = "assets/resources.xlsx";
 
 let resources = [];
+let activeProvince = null;
+let activeCity = null;
+let activeCategory = "All";
+
+const categoryFilter = document.createElement("select");
+categoryFilter.id = "categoryFilter";
+categoryFilter.style.display = "none";
+categoryFilter.innerHTML = `<option value="All">All Categories</option>`;
+resourcesList.before(categoryFilter);
+
+categoryFilter.addEventListener("change", () => {
+  activeCategory = categoryFilter.value;
+  if (activeCity) {
+    renderCityResources(activeProvince, activeCity);
+  } else if (activeProvince) {
+    renderProvinceCities(activeProvince);
+  }
+});
 
 const cityCoordinates = {
   "Ontario": {
@@ -35,21 +53,73 @@ function clearCityPins() {
   document.querySelectorAll(".city-pin").forEach(pin => pin.remove());
 }
 
+function getFilteredResources(filterFn) {
+  return resources.filter(r => {
+    if (activeCategory !== "All") {
+      if (r.Category.trim().toLowerCase() !== activeCategory.toLowerCase()) return false;
+    }
+    return filterFn(r);
+  });
+}
+
+function updateCategoryFilter(items) {
+  categoryFilter.style.display = "inline-block";
+  categoryFilter.innerHTML = `<option value="All">All Categories</option>`;
+
+  const seen = new Set();
+  const categories = items
+    .map(r => r.Category)
+    .filter(cat => {
+      const key = cat.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat.trim().toLowerCase();
+    option.textContent = cat;
+    categoryFilter.appendChild(option);
+  });
+
+  // keep selection if still valid
+  let found = false;
+  for (let i = 0; i < categoryFilter.options.length; i++) {
+    if (categoryFilter.options[i].value === activeCategory.toLowerCase()) {
+      categoryFilter.selectedIndex = i;
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    activeCategory = "All";
+    categoryFilter.value = "All";
+  }
+}
+
 function renderProvinceCities(province) {
   clearCityPins();
+  activeProvince = province;
+  activeCity = null;
+
   provinceNameEl.textContent = `${province} - Online Resources`;
   resourcesList.innerHTML = "";
 
-  const filtered = resources.filter(
-    r => r.Province.toLowerCase() === province.toLowerCase()
+  const provinceResources = resources.filter(
+    r => r.Province.toLowerCase() === province.toLowerCase() && (!r.City || r.City.trim() === "")
+  );
+  updateCategoryFilter(provinceResources);
+
+  const filtered = getFilteredResources(
+    r => r.Province.toLowerCase() === province.toLowerCase() && (!r.City || r.City.trim() === "")
   );
 
   if (filtered.length === 0) {
-    resourcesList.innerHTML = `<p>No resources found for ${province}.</p>`;
+    resourcesList.innerHTML = `<p>No province-level resources found for ${province}.</p>`;
   } else {
-
-    const noCities = filtered.filter(r => !r.City || r.City.trim() === "");
-    noCities.forEach(r => {
+    filtered.forEach(r => {
       const card = document.createElement("div");
       card.className = "resource-card";
       card.innerHTML = `
@@ -66,19 +136,11 @@ function renderProvinceCities(province) {
   Object.entries(cities).forEach(([city, coords]) => {
     const cityPin = document.createElement("div");
     cityPin.className = "city-pin";
-
-    const hasResources = filtered.some(
-      r => r.City && r.City.toLowerCase() === city.toLowerCase()
-    );
-    if (!hasResources) {
-      cityPin.classList.add("no-resource");
-    }
-
     cityPin.dataset.city = city;
     cityPin.dataset.province = province;
     cityPin.style.top = coords.top;
     cityPin.style.left = coords.left;
-    cityPin.title = hasResources ? city : `${city} (no resources)`;
+    cityPin.title = city;
 
     mapContainer.appendChild(cityPin);
 
@@ -89,17 +151,26 @@ function renderProvinceCities(province) {
 }
 
 function renderCityResources(province, city) {
+  activeProvince = province;
+  activeCity = city;
+
   provinceNameEl.textContent = `${province} - ${city}`;
   resourcesList.innerHTML = "";
-  const filtered = resources.filter(
-    r =>
-      r.Province.toLowerCase() === province.toLowerCase() &&
-      r.City.toLowerCase() === city.toLowerCase()
+
+  const cityResources = resources.filter(
+    r => r.Province.toLowerCase() === province.toLowerCase() && r.City.toLowerCase() === city.toLowerCase()
   );
+  updateCategoryFilter(cityResources);
+
+  const filtered = getFilteredResources(
+    r => r.Province.toLowerCase() === province.toLowerCase() && r.City.toLowerCase() === city.toLowerCase()
+  );
+
   if (filtered.length === 0) {
     resourcesList.innerHTML = `<p>No resources found for ${city}, ${province}.</p>`;
     return;
   }
+
   filtered.forEach(r => {
     const card = document.createElement("div");
     card.className = "resource-card";
@@ -115,6 +186,7 @@ function renderCityResources(province, city) {
 
 async function init() {
   resources = await loadExcel();
+
   document.querySelectorAll(".province-pin").forEach(pin => {
     pin.addEventListener("click", () => {
       const province = pin.dataset.province;
