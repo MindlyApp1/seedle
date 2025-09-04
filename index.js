@@ -7,7 +7,9 @@ const observer = new IntersectionObserver((entries) => {
       });
 
       const benefits = entry.target.querySelectorAll('.benefit');
-      benefits.forEach(benefit => benefit.classList.add('show'));
+      benefits.forEach((benefit, i) => {
+        setTimeout(() => benefit.classList.add('show'), i * 500);
+      });
 
       observer.unobserve(entry.target);
     }
