@@ -43,7 +43,7 @@
   font-weight: 400;
   font-size: 1rem;
   line-height: 1.8;
-  color: #333;
+  color: #2f3e2f;
   max-width: 1200px;
   margin-top: 2rem;
   margin-bottom: 2rem;
@@ -54,7 +54,8 @@
   animation-delay: 0.3s;
 }
 
-.team-container p strong {
+.team-container p strong,
+.team-footer-text p strong {
   color: #4cbb6a;
   font-weight: 600;
 }
@@ -106,7 +107,7 @@
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
-  color: #0b5646;
+  color: #10824c;
   margin: 1rem 1rem 0.5rem;
 }
 
@@ -114,7 +115,7 @@
   font-size: 0.8rem;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  color: #2e7d32;
+  color: #4cbb6a;
   margin: 0 1rem 0.5rem;
 }
 
@@ -159,7 +160,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   line-height: 1.7;
-  color: #333;
+  color: #2f3e2f;
   opacity: 0;
   transform: translateY(15px);
   animation: fadeUp 0.8s ease forwards;
