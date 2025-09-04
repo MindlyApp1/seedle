@@ -1,23 +1,23 @@
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-
-      const steps = entry.target.parentElement.querySelectorAll('.step');
+      const steps = entry.target.querySelectorAll('.step');
       steps.forEach((step, i) => {
-        setTimeout(() => {
-          step.classList.add('show');
-        }, i * 500);
+        setTimeout(() => step.classList.add('show'), i * 500);
       });
 
-      const benefits = entry.target.parentElement.querySelectorAll('.benefit');
-      benefits.forEach(benefit => {
-        benefit.classList.add('show');
-      });
+      const benefits = entry.target.querySelectorAll('.benefit');
+      benefits.forEach(benefit => benefit.classList.add('show'));
 
       observer.unobserve(entry.target);
     }
   });
 }, { threshold: 0.3 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.how-it-works, .benefits')
+          .forEach(section => observer.observe(section));
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const flower = document.getElementById("seedle-flower");
