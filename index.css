@@ -32,7 +32,9 @@
 }
 
 .hero-text {
+  position: relative;
   flex: 1;
+  margin-top: -5rem;
 }
 
 .hero-text h1 {
@@ -77,6 +79,7 @@
   align-items: center;
   position: relative;
   max-width: 100%;
+  margin-top: -2.75rem;
   animation: float 6s ease-in-out infinite;
 }
 
@@ -104,8 +107,8 @@
 
 .hero-blob {
   position: absolute;
-  top: 58%;
-  left: 79.5%;
+  top: 55%;
+  left: 81%;
   transform: translate(-70%, -50%);
   width: 100%;
   max-width: 46.875rem;
@@ -114,7 +117,7 @@
 }
 
 .hero-blob img {
-  width: 100%;
+  width: 95%;
   height: auto;
   object-fit: contain;
 }
@@ -275,8 +278,8 @@
 
 @media (orientation: portrait) {
   .hero-blob {
-    top: 31%;
-    left: 80%;
+    top: 27%;
+    left: 83.5%;
     transform: translate(-70%, -50%);
     width: 60%;
     max-width: 46.875rem;

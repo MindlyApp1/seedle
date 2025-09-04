@@ -1,14 +1,15 @@
 .mission {
   display: flex;
-  flex: 1;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
   padding: 4rem 10%;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .mission-container {
-  max-width: 1200px;
-  text-align: left;
+  flex: 1;
+  max-width: 600px;
 }
 
 .mission-container h1 {
@@ -20,9 +21,20 @@
 }
 
 .mission-container p {
-  position: relative;
   font-size: 1.1rem;
   line-height: 1.8;
   color: black;
   font-family: 'Inter', sans-serif;
+}
+
+.mission-photo {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.mission-photo img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
 }
