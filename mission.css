@@ -16,7 +16,7 @@
 
 .mission-container {
   flex: 1;
-  max-width: 600px;
+  min-width: 775px;
   position: relative;
   z-index: 2;
   opacity: 0;
@@ -73,6 +73,7 @@
   position: relative;
   z-index: 2;
   opacity: 0;
+  margin-top: 5rem;
   transform: translateY(20px);
   animation: fadeUp 1s ease-out forwards;
   animation-delay: 0.8s;
