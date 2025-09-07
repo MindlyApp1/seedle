@@ -35,14 +35,14 @@ function renderResourcesOnMap(filtered) {
 
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes";
-    const hasCoords = r.Lat && r.Lng;
+    const hasCoords = r.latitude && r.longitude;
     const hasAddress = r.Address && r.Address.trim() !== "";
 
     if (isOnline && !hasCoords && !hasAddress) {
       onlineList.push(r);
     } else if (hasCoords) {
       const marker = new google.maps.Marker({
-        position: { lat: parseFloat(r.Lat), lng: parseFloat(r.Lng) },
+        position: { lat: parseFloat(r.latitude), lng: parseFloat(r.longitude) },
         map,
         title: r.Name,
         icon: {
@@ -70,7 +70,7 @@ function renderResourcesOnMap(filtered) {
       });
 
       markers.push(marker);
-      bounds.extend({ lat: parseFloat(r.Lat), lng: parseFloat(r.Lng) });
+      bounds.extend({ lat: parseFloat(r.latitude), lng: parseFloat(r.longitude) });
     }
   });
 
@@ -187,15 +187,15 @@ async function initMap() {
     const matched = resources.filter(r => {
       const combined = `
         ${r.Name} ${r.City} ${r.Province} ${r.Category}
-        ${r.Address || ""} ${r.Lat || ""} ${r.Lng || ""}
+        ${r.Address || ""} ${r.latitude || ""} ${r.longitude || ""}
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
     });
 
     renderResourcesOnMap(matched);
 
-    if (matched.length === 1 && matched[0].Lat && matched[0].Lng) {
-      map.setCenter({ lat: parseFloat(matched[0].Lat), lng: parseFloat(matched[0].Lng) });
+    if (matched.length === 1 && matched[0].latitude && matched[0].longitude) {
+      map.setCenter({ lat: parseFloat(matched[0].latitude), lng: parseFloat(matched[0].longitude) });
       map.setZoom(12);
     }
   }
