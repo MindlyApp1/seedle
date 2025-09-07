@@ -45,7 +45,7 @@
   margin-bottom: 1.5rem;
   color: #2f3e2f;
   text-align: left;
-  line-height: 1.7;
+  line-height: 1.0;
   opacity: 1;
 }
 
@@ -200,8 +200,8 @@
 
 .resource-card p {
   flex-grow: 1;
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
   color: #2f3e2f;
   font-family: 'Inter', sans-serif;
 }
@@ -276,7 +276,7 @@
   font-family: 'Inter', sans-serif;
   padding: 0.85rem 1.1rem;
   max-width: 300px;
-  line-height: 1.6;
+  line-height: 1.0;
   color: #2f3e2f;
 }
 
@@ -284,7 +284,7 @@
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
   color: #10824c;
 }
 
