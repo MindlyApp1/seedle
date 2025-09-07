@@ -28,6 +28,7 @@ function renderResourcesOnMap(filtered) {
 
   if (filtered.length === 0) {
     inPersonSection.innerHTML = `<p>No resources found.</p>`;
+    provinceNameEl.textContent = "";
     return;
   }
 
@@ -70,6 +71,9 @@ function renderResourcesOnMap(filtered) {
   if (!bounds.isEmpty()) {
     map.fitBounds(bounds);
   }
+
+  const provinces = [...new Set(filtered.map(r => r.Province).filter(Boolean))];
+  provinceNameEl.textContent = provinces.length === 1 ? provinces[0] : "";
 
   if (onlineList.length > 0) {
     const onlineHeading = document.createElement("h2");
@@ -149,8 +153,11 @@ async function initMap() {
     fullscreenControl: false,
     styles: [
       { featureType: "poi", stylers: [{ visibility: "off" }] },
-      { featureType: "poi.park", stylers: [{ visibility: "off" }] },
-      { featureType: "transit", stylers: [{ visibility: "off" }] }
+      { featureType: "poi.park", elementType: "geometry", stylers: [{ visibility: "off" }] },
+      { featureType: "poi.park", elementType: "labels", stylers: [{ visibility: "off" }] },
+      { featureType: "transit", stylers: [{ visibility: "off" }] },
+      { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+      { featureType: "landscape", elementType: "labels", stylers: [{ visibility: "off" }] }
     ]
   });
 
@@ -183,12 +190,8 @@ async function initMap() {
 
 let ctrlApressed = false;
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) {
-    return;
-  }
-  if (e.key.toLowerCase() === "a" && e.ctrlKey) {
-    ctrlApressed = true;
-  }
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) return;
+  if (e.key.toLowerCase() === "a" && e.ctrlKey) ctrlApressed = true;
   if (ctrlApressed && e.key === "Delete") {
     markers.forEach(m => m.setMap(null));
     markers = [];

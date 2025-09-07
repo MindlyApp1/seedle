@@ -4,20 +4,23 @@
   <meta charset="UTF-8">
   <title>Seedle</title>
   <link rel="icon" href="favicon.ico">
-
+  
+  <!-- Styles -->
   <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="header.css">
   <link rel="stylesheet" href="footer.css">
   <link rel="stylesheet" href="resources.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="resources.js" defer></script>
   <script src="app.js" defer></script>
-
   <script src="key.js"></script>
+
   <script>
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${window.GOOGLE_MAPS_API_KEY}&callback=initMap&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${window.GOOGLE_MAPS_API_KEY}&callback=initMap`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -30,10 +33,13 @@
     <div class="resources-container">
       <h1 class="fade-in">Resources</h1>
       <p class="fade-up">Explore trusted resources near you on the map below.</p>
+
       <div id="map-container" class="fade-in delay-3">
         <div id="map"></div>
       </div>
+
       <h3 id="province-name" class="fade-in delay-4"></h3>
+
       <div id="resourcesList" class="fade-in delay-5">
         <div id="online-resources-section"></div>
         <div id="inperson-resources-section" class="resources-list"></div>
