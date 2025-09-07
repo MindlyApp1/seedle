@@ -149,7 +149,7 @@ async function initMap() {
     fullscreenControl: false,
     styles: [
       { featureType: "poi", stylers: [{ visibility: "off" }] },
-      { featureType: "poi.park", stylers: [{ visibility: "on" }] },
+      { featureType: "poi.park", stylers: [{ visibility: "off" }] },
       { featureType: "transit", stylers: [{ visibility: "off" }] }
     ]
   });
