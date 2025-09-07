@@ -1,5 +1,3 @@
-const provinceNameEl = document.getElementById("province-name");
-
 const excelFilePath = "assets/mentalHealthResources.xlsx";
 
 let resources = [];
@@ -28,12 +26,12 @@ function renderResourcesOnMap(filtered) {
 
   if (filtered.length === 0) {
     inPersonSection.innerHTML = `<p>No resources found.</p>`;
-    provinceNameEl.textContent = "";
     return;
   }
 
   const bounds = new google.maps.LatLngBounds();
   const onlineList = [];
+  const infoWindow = new google.maps.InfoWindow();
 
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes";
@@ -46,20 +44,28 @@ function renderResourcesOnMap(filtered) {
       const marker = new google.maps.Marker({
         position: { lat: parseFloat(r.Lat), lng: parseFloat(r.Lng) },
         map,
-        title: r.Name
-      });
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <h2>${r.Name}</h2>
-          <p><strong>${r.Category}</strong></p>
-          <p>${r.Description}</p>
-          <p><em>${r.Address || ""}</em></p>
-          <a href="${r.Link}" target="_blank">Visit Website</a>
-        `
+        title: r.Name,
+        icon: {
+          path: "M192 0C86 0 0 86 0 192c0 77.7 27.6 99.5 172.1 310.1 9.5 13.9 29.3 13.9 38.8 0C356.4 291.5 384 269.7 384 192 384 86 298 0 192 0zm0 272c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z",
+          fillColor: "#4cbb6a",
+          fillOpacity: 1,
+          strokeColor: "#10824c",
+          strokeWeight: 2,
+          scale: 0.05,
+          anchor: new google.maps.Point(192, 384)
+        }
       });
 
       marker.addListener("click", () => {
+        infoWindow.setContent(`
+          <div class="info-card">
+            <h2 class="info-title">${r.Name}</h2>
+            <p class="info-category">${r.Category}</p>
+            <p class="info-description">${r.Description}</p>
+            <p class="info-address"><em>${r.Address || ""}</em></p>
+            <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
+          </div>
+        `);
         infoWindow.open(map, marker);
       });
 
@@ -71,9 +77,6 @@ function renderResourcesOnMap(filtered) {
   if (!bounds.isEmpty()) {
     map.fitBounds(bounds);
   }
-
-  const provinces = [...new Set(filtered.map(r => r.Province).filter(Boolean))];
-  provinceNameEl.textContent = provinces.length === 1 ? provinces[0] : "";
 
   if (onlineList.length > 0) {
     const onlineHeading = document.createElement("h2");
@@ -164,18 +167,22 @@ async function initMap() {
   resources = await loadExcel();
   renderResourcesOnMap(resources);
 
-  const input = document.createElement("input");
-  input.id = "map-search";
-  input.type = "text";
-  input.placeholder = "Search mental health resources...";
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  const form = document.getElementById("search-form");
+  const input = document.getElementById("map-search");
+  const icon = document.querySelector(".search-icon");
+  const clearBtn = document.getElementById("clear-search");
 
-  input.addEventListener("input", () => {
+  function runSearch() {
     const query = input.value.trim().toLowerCase();
     if (!query) {
       renderResourcesOnMap(resources);
+      icon.style.display = "block";
+      clearBtn.style.display = "none";
       return;
     }
+    icon.style.display = "none";
+    clearBtn.style.display = "block";
+
     const queryWords = query.split(/\s+/);
     const matched = resources.filter(r => {
       const combined = `
@@ -184,7 +191,41 @@ async function initMap() {
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
     });
+
     renderResourcesOnMap(matched);
+
+    if (matched.length === 1 && matched[0].Lat && matched[0].Lng) {
+      map.setCenter({ lat: parseFloat(matched[0].Lat), lng: parseFloat(matched[0].Lng) });
+      map.setZoom(12);
+    }
+  }
+
+  input.addEventListener("input", () => {
+    if (input.value.trim().length > 0) {
+      icon.style.display = "none";
+      clearBtn.style.display = "block";
+    } else {
+      icon.style.display = "block";
+      clearBtn.style.display = "none";
+      renderResourcesOnMap(resources);
+    }
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (input.value.trim().length > 0) runSearch();
+  });
+
+  icon.addEventListener("click", () => {
+    if (input.value.trim().length === 0) return;
+    runSearch();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    clearBtn.style.display = "none";
+    icon.style.display = "block";
+    renderResourcesOnMap(resources);
   });
 }
 

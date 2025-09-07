@@ -79,6 +79,18 @@
   border: none;
 }
 
+.search-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  z-index: 2;
+  top: 3.5rem;
+  left: 1rem;
+  opacity: 0;
+  animation: fadeUpBg 1s ease-out forwards;
+  animation-delay: 1.4s;
+}
+
 #map-search {
   background-color: #fff;
   border: 2px solid #4CAF50;
@@ -86,13 +98,41 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
   margin: 0.75rem;
   width: 280px;
   outline: none;
+  margin: 0;
 }
+
 #map-search:focus {
   border-color: #2d7a46;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #555;
+  display: block;
+}
+
+#clear-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #888;
+  cursor: pointer;
+  display: none;
+  transition: color 0.2s ease;
+}
+
+#clear-search:hover {
+  color: #333;
 }
 
 .resources-list {
@@ -113,7 +153,6 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 260px;
-
   opacity: 0;
   transform: translateY(20px);
   animation: fadeSlideIn 0.6s ease-out forwards;
@@ -154,6 +193,7 @@
   font-family: 'Inter', sans-serif;
   transition: color 0.2s ease;
 }
+
 .resource-card a:hover {
   color: #2d7a46;
   text-decoration: underline;
@@ -166,7 +206,6 @@
   gap: 1.6rem;
   margin-top: 3rem;
   margin-bottom: 2rem;
-
   opacity: 0;
   animation: fadeSlideIn 0.8s ease-out forwards;
   animation-delay: 1s;
@@ -180,7 +219,6 @@
   color: #10824c;
   margin: 3rem 0 1rem 0;
   text-align: center;
-
   opacity: 0;
   animation: fadeSlideIn 0.8s ease-out forwards;
   animation-delay: 1.8s;
@@ -188,7 +226,7 @@
 
 #online-category {
   display: inline-block;
-  margin: 0 0 0rem 0;
+  margin: 0;
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   font-weight: 600;
@@ -199,7 +237,6 @@
   color: #4CAF50;
   cursor: pointer;
   transition: all 0.2s ease;
-
   opacity: 0;
   animation: fadeSlideIn 0.8s ease-out forwards;
   animation-delay: 2.1s;
@@ -211,6 +248,60 @@
 
 #online-category option {
   color: black;
+}
+
+.info-card {
+  font-family: 'Inter', sans-serif;
+  padding: 0.85rem 1.1rem;
+  max-width: 300px;
+  line-height: 1.6;
+  color: #2f3e2f;
+}
+
+.info-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+  color: #10824c;
+}
+
+.info-category {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #3d5c3d;
+  margin-bottom: 0.4rem;
+}
+
+.info-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: #2f3e2f;
+}
+
+.info-address {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+  color: #3b4d3b;
+}
+
+.info-link {
+  font-family: 'Inter', sans-serif;
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4cbb6a;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.info-link:hover {
+  color: #2d7a46;
+  text-decoration: underline;
 }
 
 @keyframes fadeSlideIn {
