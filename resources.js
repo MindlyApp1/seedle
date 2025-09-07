@@ -137,9 +137,9 @@ async function initMap() {
     restriction: {
       latLngBounds: {
         north: 83.11,
-        south: 41.67,
-        west: -141.0,
-        east: -52.0
+        south: 41.60,
+        west: -141.2,
+        east: -52.60
       },
       strictBounds: true
     },
