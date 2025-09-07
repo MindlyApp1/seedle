@@ -1,4 +1,4 @@
-const excelFilePath = "assets/mentalHealthResources.xlsx";
+const excelFilePath = "assets/canadianMentalHealthResources.xlsx";
 
 let resources = [];
 let map;
@@ -35,14 +35,13 @@ function renderResourcesOnMap(filtered) {
 
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes";
-    const hasCoords = r.latitude && r.longitude;
-    const hasAddress = r.Address && r.Address.trim() !== "";
+    const hasCoords = r.Latitude && r.Longitude;
 
-    if (isOnline && !hasCoords && !hasAddress) {
+    if (isOnline) {
       onlineList.push(r);
     } else if (hasCoords) {
       const marker = new google.maps.Marker({
-        position: { lat: parseFloat(r.latitude), lng: parseFloat(r.longitude) },
+        position: { lat: parseFloat(r.Latitude), lng: parseFloat(r.Longitude) },
         map,
         title: r.Name,
         icon: {
@@ -60,9 +59,11 @@ function renderResourcesOnMap(filtered) {
         infoWindow.setContent(`
           <div class="info-card">
             <h2 class="info-title">${r.Name}</h2>
-            <p class="info-category">${r.Category}</p>
+            <p class="info-category"><strong>${r.Category}</strong></p>
             <p class="info-description">${r.Description}</p>
-            <p class="info-address"><em>${r.Address || ""}</em></p>
+            <p class="info-address">${r.Address || ""}</p>
+            <p class="info-province"><em>${r.City ? r.City + ", " : ""}${r.Province || ""}</em></p>
+            <p class="info-contact">${r.Contact || ""}</p>
             <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
           </div>
         `);
@@ -70,12 +71,20 @@ function renderResourcesOnMap(filtered) {
       });
 
       markers.push(marker);
-      bounds.extend({ lat: parseFloat(r.latitude), lng: parseFloat(r.longitude) });
+      bounds.extend({ lat: parseFloat(r.Latitude), lng: parseFloat(r.Longitude) });
     }
   });
 
   if (!bounds.isEmpty()) {
-    map.fitBounds(bounds);
+    if (markers.length === 1) {
+      map.setCenter(markers[0].getPosition());
+      map.setZoom(12);
+    } else {
+      map.fitBounds(bounds);
+    }
+  } else {
+    map.setCenter({ lat: 56.1304, lng: -106.3468 });
+    map.setZoom(4);
   }
 
   if (onlineList.length > 0) {
@@ -117,6 +126,8 @@ function renderResourcesOnMap(filtered) {
           <h2>${r.Name}</h2>
           <p><strong>${r.Category}</strong></p>
           <p>${r.Description}</p>
+          <p>${r.Contact || ""}</p>
+          <p><em>${r.Province || ""}</em></p>
           <a href="${r.Link}" target="_blank">Visit Website</a>
         `;
         onlineContainer.appendChild(card);
@@ -186,17 +197,31 @@ async function initMap() {
     const queryWords = query.split(/\s+/);
     const matched = resources.filter(r => {
       const combined = `
-        ${r.Name} ${r.City} ${r.Province} ${r.Category}
-        ${r.Address || ""} ${r.latitude || ""} ${r.longitude || ""}
+        ${String(r.Name || "")}
+        ${String(r.City || "")}
+        ${String(r.Province || "")}
+        ${String(r.Category || "")}
+        ${String(r.Address || "")}
+        ${String(r.Contact || "")}
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
     });
 
     renderResourcesOnMap(matched);
 
-    if (matched.length === 1 && matched[0].latitude && matched[0].longitude) {
-      map.setCenter({ lat: parseFloat(matched[0].latitude), lng: parseFloat(matched[0].longitude) });
+    if (matched.length === 1 && matched[0].Latitude && matched[0].Longitude) {
+      map.setCenter({ lat: parseFloat(matched[0].Latitude), lng: parseFloat(matched[0].Longitude) });
       map.setZoom(12);
+    } else if (matched.length > 1) {
+      const bounds = new google.maps.LatLngBounds();
+      matched.forEach(r => {
+        if (r.Latitude && r.Longitude) {
+          bounds.extend({ lat: parseFloat(r.Latitude), lng: parseFloat(r.Longitude) });
+        }
+      });
+      if (!bounds.isEmpty()) {
+        map.fitBounds(bounds);
+      }
     }
   }
 
