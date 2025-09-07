@@ -135,15 +135,12 @@ function renderResourcesOnMap(filtered) {
     }
     function renderOnlineCards(selected) {
       let cards = onlineContainer.querySelectorAll(".resource-card");
-
-      // First load: build cards
       if (cards.length === 0) {
         onlineList.forEach((r) => {
           const distance =
             userPos && r.Latitude && r.Longitude
               ? getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude) + " km away"
               : "Distance unavailable";
-
           const card = document.createElement("div");
           card.className = "resource-card initial-load";
           card.setAttribute("data-category", r.Category);
@@ -157,31 +154,24 @@ function renderResourcesOnMap(filtered) {
             <a href="${r.Link}" target="_blank">Visit Website</a>
           `;
           onlineContainer.appendChild(card);
-
-          // After animation: remove initial-load, but DON'T override display
           card.addEventListener("animationend", () => {
             card.classList.remove("initial-load");
           }, { once: true });
         });
-
         cards = onlineContainer.querySelectorAll(".resource-card");
       }
-
-      // Filtering logic
       cards.forEach(card => {
         const cat = card.getAttribute("data-category");
         if (selected === "all" || cat === selected) {
           card.style.display = "block";
           card.classList.remove("fade-in");
-          void card.offsetWidth; // reflow
+          void card.offsetWidth;
           card.classList.add("fade-in");
         } else {
           card.style.display = "none";
         }
       });
     }
-
-
     renderOnlineCards("all");
   }
 }
@@ -209,14 +199,41 @@ async function initMap() {
       { featureType: "landscape", elementType: "labels", stylers: [{ visibility: "off" }] }
     ]
   });
+
   resources = await loadExcel();
-  if (navigator.geolocation) {
+  renderResourcesOnMap(resources);
+
+  const locationButton = document.createElement("button");
+  locationButton.className = "custom-location-btn";
+  locationButton.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i>`;
+  locationButton.style.background = "#fff";
+  locationButton.style.border = "2px solid #ccc";
+  locationButton.style.borderRadius = "50%";
+  locationButton.style.width = "40px";
+  locationButton.style.height = "40px";
+  locationButton.style.display = "flex";
+  locationButton.style.alignItems = "center";
+  locationButton.style.justifyContent = "center";
+  locationButton.style.cursor = "pointer";
+  locationButton.style.margin = "10px";
+  locationButton.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+  locationButton.title = "Zoom to your location";
+
+  let userMarker = null;
+
+  locationButton.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         map.setCenter(userPos);
-        map.setZoom(12);
-        new google.maps.Marker({
+        map.setZoom(14);
+
+        if (userMarker) userMarker.setMap(null);
+        userMarker = new google.maps.Marker({
           position: userPos,
           map,
           title: "You are here",
@@ -229,15 +246,21 @@ async function initMap() {
             strokeWeight: 2
           }
         });
-        renderResourcesOnMap(resources);
       },
-      () => {
-        renderResourcesOnMap(resources);
+      (err) => {
+        alert("Unable to get your location");
+        console.error(err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
     );
-  } else {
-    renderResourcesOnMap(resources);
-  }
+  });
+
+  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
+
   const form = document.getElementById("search-form");
   const input = document.getElementById("map-search");
   const icon = document.querySelector(".search-icon");

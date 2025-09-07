@@ -87,14 +87,6 @@
   transform-origin: bottom center;
 }
 
-@keyframes floatSway {
-  0%   { transform: rotate(0deg) translateY(0); }
-  25%  { transform: rotate(-2deg) translateY(-3px); }
-  50%  { transform: rotate(0deg) translateY(0); }
-  75%  { transform: rotate(2deg) translateY(-3px); }
-  100% { transform: rotate(0deg) translateY(0); }
-}
-
 .hero-image img {
   width: 100%;
   max-width: 39rem;
@@ -110,17 +102,12 @@
   left: 50%;
   width: 26rem;
   height: 26rem;
-    background: radial-gradient(
-    circle,
-    rgba(255, 200, 50, 0.72) 0%,
-    rgba(255, 200, 50, 0) 75%
-  );
+  background: radial-gradient(circle, rgba(255, 200, 50, 0.72) 0%, rgba(255, 200, 50, 0) 75%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 0;
   filter: blur(2.5rem);
 }
-
 
 .hero-blob {
   position: absolute;
@@ -282,6 +269,7 @@
     transform: translateX(0);
   }
 }
+
 @keyframes floatSway {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   25% { transform: translateY(-0.5rem) rotate(2deg); }

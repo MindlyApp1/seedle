@@ -5,12 +5,10 @@ const observer = new IntersectionObserver((entries) => {
       steps.forEach((step, i) => {
         setTimeout(() => step.classList.add('show'), i * 500);
       });
-
       const benefits = entry.target.querySelectorAll('.benefit');
       benefits.forEach((benefit, i) => {
         setTimeout(() => benefit.classList.add('show'), i * 500);
       });
-
       observer.unobserve(entry.target);
     }
   });
@@ -23,16 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const flower = document.getElementById("seedle-flower");
-
   const frames = [
     "assets/flower1.png",
     "assets/flower2.png",
     "assets/flower3.png",
     "assets/flower4.png"
   ];
-
   let i = 0;
-
   function animateSeed() {
     if (i < frames.length) {
       flower.src = frames[i];
@@ -41,12 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
           flower.classList.add("sway");
         }, 1000);
       } else {
-        setTimeout(animateSeed, 1000); 
+        setTimeout(animateSeed, 500);
       }
-
       i++;
     }
   }
-
   animateSeed();
 });
