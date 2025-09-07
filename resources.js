@@ -227,6 +227,15 @@ async function initMap() {
       return;
     }
 
+    if (input.value.trim().length > 0) {
+      input.value = "";
+      icon.classList.add("disabled");
+      icon.classList.remove("active", "toggled");
+      icon.style.display = "block";
+      clearBtn.style.display = "none";
+      renderResourcesOnMap(resources);
+    }
+
     runGeolocation(true);
     setTimeout(() => runGeolocation(false), 200);
   });
