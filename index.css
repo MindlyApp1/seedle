@@ -111,8 +111,8 @@
 
 .hero-blob {
   position: absolute;
-  top: 52.5%;
-  left: 80.5%;
+  top: 57.5%;
+  left: 80%;
   transform: translate(-70%, -50%);
   width: 100%;
   max-width: 46.875rem;
