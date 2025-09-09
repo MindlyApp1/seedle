@@ -14,13 +14,18 @@ async function loadExcel() {
   const sheet = workbook.Sheets[sheetName];
   const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
   return json.map(r => {
+    const row = {};
+    for (const key in r) {
+      row[key.trim()] = r[key];
+    }
     return {
-      ...r,
-      OriginalCategory: r.Category ? r.Category.trim() : "",
-      Category: r.Category ? r.Category.toLowerCase().trim().replace(/\s+/g, " ") : "",
-      Name: r.Name ? r.Name.toLowerCase().trim().replace(/\s+/g, " ") : "",
-      Latitude: r.Latitude && !isNaN(parseFloat(r.Latitude)) ? parseFloat(r.Latitude) : null,
-      Longitude: r.Longitude && !isNaN(parseFloat(r.Longitude)) ? parseFloat(r.Longitude) : null
+      ...row,
+      OriginalCategory: row.Category ? String(row.Category).trim() : "",
+      Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
+      Name: row.Name ? String(row.Name).toLowerCase().trim().replace(/\s+/g, " ") : "",
+      OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
+      Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
+      Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null
     };
   });
 }
@@ -51,7 +56,7 @@ function renderResourcesOnMap(filtered) {
   const onlineList = [];
   const infoWindow = new google.maps.InfoWindow();
   filtered.forEach(r => {
-    const isOnline = r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes";
+    const isOnline = r.OnlineOnly && r.OnlineOnly.trim().toLowerCase() === "yes";
     const hasCoords = r.Latitude && r.Longitude;
     if (isOnline) {
       onlineList.push(r);
@@ -369,6 +374,7 @@ async function initMap() {
     clearBtn.style.display = "none";
     renderResourcesOnMap(resources);
   });
+  runGeolocation(true);
 }
 
 let ctrlApressed = false;
