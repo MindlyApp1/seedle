@@ -137,10 +137,14 @@ function renderResourcesOnMap(filtered) {
       let cards = onlineContainer.querySelectorAll(".resource-card");
       if (cards.length === 0) {
         onlineList.forEach((r) => {
-          const distance =
-            userPos && r.Latitude && r.Longitude
-              ? getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude) + " km away"
-              : "Distance unavailable";
+          let distance = "";
+          if (!r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes") {
+            if (userPos && r.Latitude && r.Longitude) {
+              distance = getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude) + " km away";
+            } else {
+              distance = "Distance unavailable";
+            }
+          }
           const card = document.createElement("div");
           card.className = "resource-card initial-load";
           card.setAttribute("data-category", r.Category);
