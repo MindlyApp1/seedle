@@ -374,7 +374,8 @@ async function initMap() {
     clearBtn.style.display = "none";
     renderResourcesOnMap(resources);
   });
-
+  runGeolocation(true);
+  setTimeout(() => runGeolocation(false), 200);
 }
 
 let ctrlApressed = false;
