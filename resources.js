@@ -301,7 +301,8 @@ async function initMap() {
     icon.classList.add("active", "toggled");
     icon.style.display = "none";
     clearBtn.style.display = "block";
-    const queryWords = query.split(/\s+/);
+    const stopwords = ["in", "at", "on", "for", "the", "a", "an", "of"];
+    const queryWords = query.split(/\s+/).filter(w => !stopwords.includes(w));
     const onlineResources = resources.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
     const inPersonMatches = resources.filter(r => {
       if (r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes") return false;
