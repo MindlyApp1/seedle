@@ -252,37 +252,40 @@ async function initMap() {
   });
 
   function runGeolocation(skipMarker) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
 
-        if (!skipMarker) {
-          if (userMarker) {
-            userMarker.setPosition(userPos);
-          } else {
-            userMarker = new google.maps.Marker({
-              position: userPos,
-              map,
-              title: "You are here",
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 8,
-                fillColor: "#4285F4",
-                fillOpacity: 1,
-                strokeColor: "#fff",
-                strokeWeight: 2
-              }
-            });
-          }
+      if (!skipMarker) {
+        if (userMarker) {
+          userMarker.setPosition(userPos);
+        } else {
+          userMarker = new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "You are here",
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: "#4285F4",
+              fillOpacity: 1,
+              strokeColor: "#fff",
+              strokeWeight: 2
+            }
+          });
         }
+      }
 
-        map.setCenter(userPos);
-        map.setZoom(14);
-      },
+      map.setCenter(userPos);
+      map.setZoom(14);
+    },
+    () => {
 
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  }
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
 
