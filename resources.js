@@ -23,6 +23,8 @@ async function loadExcel() {
       OriginalCategory: row.Category ? String(row.Category).trim() : "",
       Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
       Name: row.Name ? String(row.Name).toLowerCase().trim().replace(/\s+/g, " ") : "",
+      City: row.City ? String(row.City).toLowerCase().trim().replace(/\s+/g, " ") : "",
+      Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
       OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
       Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
       Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null
@@ -301,9 +303,13 @@ async function initMap() {
     icon.classList.add("active", "toggled");
     icon.style.display = "none";
     clearBtn.style.display = "block";
-    const stopwords = ["in", "at", "on", "for", "the", "a", "an", "of"];
-    const queryWords = query.split(/\s+/).filter(w => !stopwords.includes(w));
-    const onlineResources = resources.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
+
+    const queryWords = query.split(/\s+/);
+
+    const onlineResources = resources.filter(
+      r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes"
+    );
+
     const inPersonMatches = resources.filter(r => {
       if (r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes") return false;
       const combined = `
@@ -316,8 +322,10 @@ async function initMap() {
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
     });
+
     const matched = [...inPersonMatches, ...onlineResources];
     renderResourcesOnMap(matched);
+
     if (inPersonMatches.length === 1 && inPersonMatches[0].Latitude && inPersonMatches[0].Longitude) {
       map.setCenter({ lat: inPersonMatches[0].Latitude, lng: inPersonMatches[0].Longitude });
       map.setZoom(12);
@@ -331,6 +339,7 @@ async function initMap() {
       if (!bounds.isEmpty()) map.fitBounds(bounds);
     }
   }
+
   input.addEventListener("input", () => {
     if (input.value.trim().length === 0) {
       icon.classList.add("disabled");
@@ -343,6 +352,7 @@ async function initMap() {
       icon.classList.add("active");
     }
   });
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (input.value.trim().length > 0) {
@@ -351,6 +361,7 @@ async function initMap() {
       clearBtn.style.display = "block";
     }
   });
+
   icon.addEventListener("click", () => {
     if (icon.classList.contains("disabled")) return;
     if (icon.classList.contains("toggled")) {
@@ -364,6 +375,7 @@ async function initMap() {
     if (input.value.trim().length === 0) return;
     runSearch();
   });
+
   clearBtn.addEventListener("click", () => {
     input.value = "";
     icon.classList.add("disabled");
@@ -372,6 +384,7 @@ async function initMap() {
     clearBtn.style.display = "none";
     renderResourcesOnMap(resources);
   });
+
   runGeolocation(true);
   setTimeout(() => runGeolocation(false), 200);
 }
