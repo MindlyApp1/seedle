@@ -374,7 +374,7 @@ async function initMap() {
     clearBtn.style.display = "none";
     renderResourcesOnMap(resources);
   });
-  runGeolocation(true);
+
 }
 
 let ctrlApressed = false;
