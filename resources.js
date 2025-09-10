@@ -277,10 +277,7 @@ async function initMap() {
         map.setCenter(userPos);
         map.setZoom(14);
       },
-      (err) => {
-        console.error(err);
-        alert("Unable to get your location");
-      },
+
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }
