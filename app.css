@@ -10,10 +10,6 @@ html, body {
   height: 100%;
 }
 
-main {
-  flex: 1;
-}
-
 @media screen and (orientation: landscape) and (pointer: coarse) {
   body::before {
     content: "Please rotate your device to portrait mode for the best experience.";
