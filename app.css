@@ -9,27 +9,3 @@ html, body {
   flex-direction: column;
   height: 100%;
 }
-
-@media screen and (orientation: landscape) and (pointer: coarse) {
-  body::before {
-    content: "Please rotate your device to portrait mode for the best experience.";
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fef9eb;
-    z-index: 9999;
-    font-size: 1.2rem;
-    color: black;
-    text-align: center;
-    padding: 2rem;
-    pointer-events: all;
-  }
-
-  body {
-    overflow: hidden;
-    touch-action: none;
-    pointer-events: none;
-  }
-}
