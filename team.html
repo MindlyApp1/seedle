@@ -6,106 +6,224 @@
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="app.css">
   <script src="app.js" defer></script>
+  <script src="team.js" defer></script>
   <link rel="stylesheet" href="header.css">
   <link rel="stylesheet" href="footer.css">
   <link rel="stylesheet" href="team.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://seedle.ca/team" />
   <meta property="og:title" content="Team" />
   <meta property="og:site_name" content="seedle.ca" />
   <meta property="og:description" content=" " />
   <meta property="og:image" content="https://seedle.ca/assets/teamPage.png" />
-
 </head>
 <body>
   <div id="header"></div>
-
   <main class="team">
+    <img src="assets/leaf1.png" alt="" class="leaf leaf1">
+    <img src="assets/leaf2.png" alt="" class="leaf leaf2">
+    <img src="assets/leaf3.png" alt="" class="leaf leaf3">
+    <img src="assets/leaf4.png" alt="" class="leaf leaf4">
     <div class="team-container">
       <h1>Our Team</h1>
-      <p>
-        Meet the people behind Seedle. Our team is passionate about making 
-        <strong>mental health resources accessible</strong> and building tools that 
-        connect communities with the <strong>support they need</strong>. We bring 
-        together diverse skills in <strong>technology</strong>, 
-        <strong>healthcare</strong>, and <strong>community engagement</strong> to create 
-        a platform that makes support easy to find and simple to understand. 
-        By working collaboratively and with compassion, we are committed to breaking 
-        down barriers, reducing stigma, and ensuring that no one feels alone 
-        when reaching out for help.
-      </p>
-
-      <div class="team-grid">
-        <div class="team-member">
-          <img src="assets/yehonatan.png" alt="Yehonatan Shakarghi">
-          <h2>Yehonatan Shakarghi</h2>
-          <h3>Chief Executive Officer</h3>
-          <p>
-            Yehonatan is focused on bridging technology and healthcare through 
-            innovative solutions that reduce barriers to support. With a background 
-            in health sciences and leadership, he’s passionate about making mental 
-            health resources accessible to all. 
-          </p>
-          <a href="https://www.linkedin.com/in/yehonatan-shakarghi-29bb7a291/" target="_blank" class="linkedin-icon">
-            <i class="fa-brands fa-linkedin"></i>
-          </a>
-        </div>
-
-        <div class="team-member">
-          <img src="assets/sharmin.png" alt="Sharmin Dabidiyan">
-          <h2>Sharmin Dabidiyan</h2>
-          <h3>Chief Operations Officer</h3>
-          <p>
-            Sharmin brings strong operational expertise to Seedle, ensuring that 
-            projects run smoothly and efficiently. He is passionate about 
-            supporting communities with accessible and effective resources. 
-          </p>
-          <a href="https://www.linkedin.com/in/sharmin-dabidiyan-288205234/" target="_blank" class="linkedin-icon">
-            <i class="fa-brands fa-linkedin"></i>
-          </a>
-        </div>
-
-        <div class="team-member">
-          <img src="assets/jiayi.png" alt="Jiayi Wu">
-          <h2>Jiayi Wu</h2>
-          <h3>Chief Financial Officer</h3>
-          <p>
-            Jiayi oversees Seedle’s financial planning and sustainability. 
-            His goal is to ensure that Seedle grows in a way that supports 
-            both users and long-term impact. 
-          </p>
-          <a href="https://www.linkedin.com/in/jiayi-wu-9787bb269/" target="_blank" class="linkedin-icon">
-            <i class="fa-brands fa-linkedin"></i>
-          </a>
-        </div>
-
-        <div class="team-member">
-          <img src="assets/akpotobore.png" alt="Akpotobore Akpoigbe">
-          <h2>Akpotobore Akpoigbe</h2>
-          <h3>Chief Marketing Officer</h3>
-          <p>
-            Akpotobore leads marketing efforts with creativity and impact, 
-            helping to share Seedle’s mission widely. He is committed to 
-            reducing stigma and inspiring action across communities. 
-          </p>
-          <a href="https://www.linkedin.com/in/akpotobore-akpoigbe-1a42ba252/" target="_blank" class="linkedin-icon">
-            <i class="fa-brands fa-linkedin"></i>
-          </a>
-        </div>
+      <div class="team-flower">
+        <img src="assets/teamPageFlower.png" alt="Team Flower" class="flower-img">
+        <a href="#advisors" class="flower-link advisors"></a>
+        <a href="#founders" class="flower-link founders"></a>
+        <a href="#directors" class="flower-link directors"></a>
+        <a href="#coordinators" class="flower-link coordinators"></a>
       </div>
-    </div>
 
-    <div class="team-footer-text">
-      <p>
-        Together, our team combines <strong>leadership, operations, finance, and marketing expertise</strong> 
-        to bring Seedle’s mission to life. We are dedicated to <strong>building tools that connect communities with the care they need</strong>, 
-        breaking barriers, reducing stigma, and <strong>inspiring action across Canada</strong>.
-      </p>
+      <section id="advisors" class="team-section">
+        <h2 class="team-subtitle">Advisors</h2>
+        <div class="advisors-grid">
+          <div class="advisor-member">
+            <img src="assets/drPaulGrof.png" alt="Advisor 1">
+            <h3>Dr. Paul Grof</h3>
+          </div>
+          <div class="advisor-member">
+            <img src="assets/defaultProfile.png" alt="Advisor 2">
+            <h3>To Be Announced</h3>
+          </div>
+          <div class="advisor-member">
+            <img src="assets/defaultProfile.png" alt="Advisor 3">
+            <h3>To Be Announced</h3>
+          </div>
+        </div>
+      </section>
+
+      <section id="founders" class="team-section">
+        <h2 class="team-subtitle">Founders</h2>
+        <div class="team-grid">
+          <div class="team-member">
+            <img src="assets/yehonatan.png" alt="Yehonatan Shakarghi">
+            <h2>Yehonatan Shakarghi</h2>
+            <h3>Chief Executive Officer</h3>
+            <p>Yehonatan is focused on bridging technology and healthcare through 
+              innovative solutions that reduce barriers to support. With a background 
+              in health sciences and leadership, he’s passionate about making mental 
+              health resources accessible to all. 
+            </p>
+            <a href="https://www.linkedin.com/in/yehonatan-shakarghi-29bb7a291/" target="_blank" class="linkedin-icon">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+          <div class="team-member">
+            <img src="assets/sharmin.png" alt="Sharmin Dabidiyan">
+            <h2>Sharmin Dabidiyan</h2>
+            <h3>Chief Operations Officer</h3>
+            <p>Sharmin brings strong operational expertise to Seedle, ensuring that 
+              projects run smoothly and efficiently. She is passionate about 
+              supporting communities with accessible and effective resources. 
+            </p>
+            <a href="https://www.linkedin.com/in/sharmin-dabidiyan-288205234/" target="_blank" class="linkedin-icon">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+          <div class="team-member">
+            <img src="assets/jiayi.png" alt="Jiayi Wu">
+            <h2>Jiayi Wu</h2>
+            <h3>Chief Financial Officer</h3>
+            <p>Jiayi oversees Seedle’s financial planning and sustainability. 
+              His goal is to ensure that Seedle grows in a way that supports 
+              both users and long-term impact. 
+            </p>
+            <a href="https://www.linkedin.com/in/jiayi-wu-9787bb269/" target="_blank" class="linkedin-icon">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+          <div class="team-member">
+            <img src="assets/akpotobore.png" alt="Akpotobore Akpoigbe">
+            <h2>Akpotobore Akpoigbe</h2>
+            <h3>Chief Marketing Officer</h3>
+            <p>Akpotobore leads marketing efforts with creativity and impact, 
+              helping to share Seedle’s mission widely. He is committed to 
+              reducing stigma and inspiring action across communities. 
+            </p>
+            <a href="https://www.linkedin.com/in/akpotobore-akpoigbe-1a42ba252/" target="_blank" class="linkedin-icon">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="directors" class="team-section">
+        <div class="directors-liaison-row">
+          <div class="directors-side">
+            <h2 class="team-subtitle">Directors</h2>
+            <div class="directors-grid">
+              <div class="profile-card">
+                <p class="role">Technology</p>
+                <img src="assets/michaelKailan.png" alt="Director 1">
+                <h3>Michael Kailan</h3>
+              </div>
+              <div class="profile-card">
+                <p class="role">Outreach</p>
+                <img src="assets/defaultProfile.png" alt="Director 2">
+                <h3>To Be Announced</h3>
+              </div>
+              <div class="profile-card">
+                <p class="role">Marketing</p>
+                <img src="assets/defaultProfile.png" alt="Director 3">
+                <h3>To Be Announced</h3>
+              </div>
+              <div class="profile-card">
+                <p class="role">Dependencies</p>
+                <img src="assets/defaultProfile.png" alt="Director 4">
+                <h3>To Be Announced</h3>
+              </div>
+            </div>
+          </div>
+          <div class="liaison-side">
+            <div class="liaison-grid">
+              <div class="profile-card">
+                <p class="role">Mental Health Liaison</p>
+                <img src="assets/adityaLumb.png" alt="Aditya Lumb">
+                <h3>Aditya Lumb</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="coordinators" class="team-section">
+        <h2 class="team-subtitle">Coordinators</h2>
+        <div class="coordinator-row">
+          <div class="coordinator-side">
+            <h3 class="coordinator-subtitle">Technology</h3>
+            <div class="coordinator-grid">
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 1">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 2">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 3">
+                <h4>To Be Announced</h4>
+              </div>
+            </div>
+          </div>
+          <div class="coordinator-side">
+            <h3 class="coordinator-subtitle">Outreach</h3>
+            <div class="coordinator-grid">
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 4">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 5">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 6">
+                <h4>To Be Announced</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="coordinator-row">
+          <div class="coordinator-side">
+            <h3 class="coordinator-subtitle">Marketing</h3>
+            <div class="coordinator-grid">
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 7">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 8">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 9">
+                <h4>To Be Announced</h4>
+              </div>
+            </div>
+          </div>
+          <div class="coordinator-side">
+            <h3 class="coordinator-subtitle">Dependencies</h3>
+            <div class="coordinator-grid">
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 10">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 11">
+                <h4>To Be Announced</h4>
+              </div>
+              <div class="coordinator-member">
+                <img src="assets/defaultProfile.png" alt="Coordinator 12">
+                <h4>To Be Announced</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
-
   <div id="footer"></div>
 </body>
 </html>

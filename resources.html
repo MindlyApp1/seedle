@@ -33,26 +33,66 @@
   <main class="resources">
     <div class="resources-container">
       <h1 class="fade-in">Resources</h1>
-      <p class="fade-up">Explore trusted resources near you on the map below.</p>
+      <p id="map-description" class="fade-up" style="display:none;">
+        Explore trusted resources near you on the map below.
+      </p>
+      <div id="questionnaire" class="fade-in">
+        <h2>Find the right resources for you</h2>
+        <form id="questionnaire-form">
+          <label>
+            How would you like to access support?
+            <select id="resource-type">
+              <option value="any">No preference</option>
+              <option value="online">Online (phone, chat, video, text)</option>
+              <option value="inperson">In-person (visit a centre, clinic, or community space)</option>
+            </select>
+          </label>
+          <label>
+            What type of help do you need most right now?
+            <select id="resource-category">
+              <option value="any">No preference</option>
+            </select>
+          </label>
+          <div class="questionnaire-buttons">
+            <button type="submit">Show Resources</button>
+            <button type="button" id="skip-questionnaire">Skip</button>
+          </div>
+        </form>
+      </div>
 
-      <form id="search-form" class="search-wrapper">
+      <form id="search-form" class="search-wrapper" style="display:none;">
         <input 
           type="text" 
           id="map-search" 
-          placeholder="Search for resources..." 
+          placeholder="Search in-person resources..." 
         />
         <i class="fa fa-search search-icon"></i>
         <span id="clear-search">&times;</span>
       </form>
 
-      <div id="map-container" class="fade-in delay-3">
+      <div id="map-container" class="fade-in delay-3" style="display:none;">
         <div id="map"></div>
       </div>
 
-      <h3 id="province-name" class="fade-in delay-4"></h3>
+      <h3 id="province-name" class="fade-in delay-4" style="display:none;"></h3>
 
-      <div id="resourcesList" class="fade-in delay-5">
-        <div id="online-resources-section"></div>
+      <button type="button" id="back-to-questionnaire" style="display:none;">Back</button>
+
+      <div id="resourcesList" class="fade-in delay-5" style="display:none;">
+        <div id="online-resources-section">
+          <h2 class="online-heading">Online Resources</h2>
+          <div class="section-header">
+            <input 
+              type="text" 
+              id="online-search" 
+              class="category-search" 
+              placeholder="Search online resources..."
+            />
+            <select id="online-category"></select>
+          </div>
+          <div class="resources-list"></div>
+        </div>
+
         <div id="inperson-resources-section" class="resources-list"></div>
       </div>
     </div>

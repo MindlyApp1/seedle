@@ -4,6 +4,7 @@ let resources = [];
 let map;
 let markers = [];
 let userPos = null;
+let firstOnlineRender = true;
 
 async function loadExcel() {
   const response = await fetch(excelFilePath);
@@ -57,26 +58,48 @@ function renderResourcesOnMap(filtered) {
   const bounds = new google.maps.LatLngBounds();
   const onlineList = [];
   const infoWindow = new google.maps.InfoWindow();
+
+  const categoryColors = {
+    counseling: "#4cbb6a",
+    therapy: "#4285F4",
+    helpline: "#FF6B6B",
+    community: "#FFA500",
+    education: "#9C27B0",
+    support: "#00ACC1",
+    default: "#10824c"
+  };
+
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.trim().toLowerCase() === "yes";
     const hasCoords = r.Latitude && r.Longitude;
     if (isOnline) {
       onlineList.push(r);
     } else if (hasCoords) {
+      const normalizedCat = (r.Category || "").toLowerCase();
+
+      let color = categoryColors.default;
+      for (const key in categoryColors) {
+        if (normalizedCat.includes(key)) {
+          color = categoryColors[key];
+          break;
+        }
+      }
+
       const marker = new google.maps.Marker({
         position: { lat: r.Latitude, lng: r.Longitude },
         map,
         title: r.Name,
         icon: {
           path: "M192 0C86 0 0 86 0 192c0 77.7 27.6 99.5 172.1 310.1 9.5 13.9 29.3 13.9 38.8 0C356.4 291.5 384 269.7 384 192 384 86 298 0 192 0zm0 272c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z",
-          fillColor: "#4cbb6a",
+          fillColor: color,
           fillOpacity: 1,
-          strokeColor: "#10824c",
+          strokeColor: "#333",
           strokeWeight: 2,
           scale: 0.05,
           anchor: new google.maps.Point(192, 384)
         }
       });
+
       marker.addListener("click", () => {
         const distanceText =
           userPos && r.Latitude && r.Longitude
@@ -110,83 +133,95 @@ function renderResourcesOnMap(filtered) {
     map.setCenter({ lat: 56.1304, lng: -106.3468 });
     map.setZoom(4);
   }
-  if (onlineList.length > 0) {
-    let onlineHeading = onlineSection.querySelector(".online-heading");
-    let categoryFilter = onlineSection.querySelector("#online-category");
-    let onlineContainer = onlineSection.querySelector(".resources-list");
-    if (!onlineHeading) {
-      onlineHeading = document.createElement("h2");
-      onlineHeading.className = "online-heading";
-      onlineHeading.textContent = "Online Resources";
-      onlineSection.appendChild(onlineHeading);
+  
+if (onlineList.length > 0) {
+  let headerWrapper = onlineSection.querySelector(".section-header");
+  let categoryFilter = document.getElementById("online-category");
+  let onlineSearch = document.getElementById("online-search");
+  let onlineContainer = onlineSection.querySelector(".resources-list");
 
-      categoryFilter = document.createElement("select");
-      categoryFilter.id = "online-category";
-      categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
-      onlineSection.appendChild(categoryFilter);
+  if (!headerWrapper) {
+    headerWrapper = document.createElement("div");
+    headerWrapper.className = "section-header";
+    onlineSection.appendChild(headerWrapper);
 
-      const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
-      categories.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat;
-        const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
-        option.textContent = pretty;
-        categoryFilter.appendChild(option);
-      });
+    const onlineHeading = document.createElement("h2");
+    onlineHeading.className = "online-heading";
+    onlineHeading.textContent = "Online Resources";
+    headerWrapper.appendChild(onlineHeading);
 
+    if (!onlineContainer) {
       onlineContainer = document.createElement("div");
       onlineContainer.className = "resources-list";
       onlineSection.appendChild(onlineContainer);
-
-      categoryFilter.addEventListener("change", () => renderOnlineCards(categoryFilter.value));
     }
-    function renderOnlineCards(selected) {
-      let cards = onlineContainer.querySelectorAll(".resource-card");
-      if (cards.length === 0) {
-        onlineList.forEach((r) => {
-          let distance = "";
-          if (!r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes") {
-            if (userPos && r.Latitude && r.Longitude) {
-              distance = getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude) + " km away";
-            } else {
-              distance = "Distance unavailable";
-            }
-          }
-          const card = document.createElement("div");
-          card.className = "resource-card initial-load";
-          card.setAttribute("data-category", r.Category);
-          card.innerHTML = `
-            <h2>${r.Name}</h2>
-            <p><strong>${r.OriginalCategory || r.Category}</strong></p>
-            <p>${r.Description}</p>
-            <p>${r.Contact || ""}</p>
-            <p><em>${r.City ? r.City + ", " : ""}${r.Province || ""}</em></p>
-            <p class="info-distance">${distance}</p>
-            <a href="${r.Link}" target="_blank">Visit Website</a>
-          `;
-          onlineContainer.appendChild(card);
-          card.addEventListener("animationend", () => {
-            card.classList.remove("initial-load");
-          }, { once: true });
-        });
-        cards = onlineContainer.querySelectorAll(".resource-card");
-      }
-      cards.forEach(card => {
-        const cat = card.getAttribute("data-category");
-        if (selected === "all" || cat === selected) {
-          card.style.display = "block";
-          card.classList.remove("fade-in");
-          void card.offsetWidth;
-          card.classList.add("fade-in");
-        } else {
-          card.style.display = "none";
-        }
-      });
-    }
-    renderOnlineCards("all");
   }
+
+  categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
+  const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
+    option.textContent = pretty;
+    categoryFilter.appendChild(option);
+  });
+
+  function renderOnlineCards(selected, searchQuery = "") {
+    onlineContainer.innerHTML = "";
+
+    const query = searchQuery.trim().toLowerCase();
+
+    onlineList.forEach(r => {
+      const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
+      const matchCat = (selected === "all" || r.Category === selected);
+      const matchText = (!query || cardText.includes(query));
+
+      if (matchCat && matchText) {
+        const card = document.createElement("div");
+        card.className = "resource-card";
+
+        if (firstOnlineRender) {
+          card.classList.add("initial-load");
+        }
+
+        card.setAttribute("data-category", r.Category);
+        card.setAttribute("data-text", cardText);
+        card.innerHTML = `
+          <h2>${r.Name}</h2>
+          <p><strong>${r.OriginalCategory || r.Category}</strong></p>
+          <p>${r.Description}</p>
+          <p>${r.Contact || ""}</p>
+          <a href="${r.Link}" target="_blank">Visit Website</a>
+        `;
+        onlineContainer.appendChild(card);
+
+        if (firstOnlineRender) {
+          card.addEventListener(
+            "animationend",
+            () => card.classList.remove("initial-load"),
+            { once: true }
+          );
+        }
+      }
+    });
+
+    firstOnlineRender = false;
+  }
+
+  renderOnlineCards("all", "");
+
+  categoryFilter.addEventListener("change", () => {
+    renderOnlineCards(categoryFilter.value, onlineSearch.value);
+  });
+
+  onlineSearch.addEventListener("input", () => {
+    renderOnlineCards(categoryFilter.value, onlineSearch.value);
+  });
+
 }
 
+}
 async function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 56.1304, lng: -106.3468 },
@@ -212,7 +247,134 @@ async function initMap() {
   });
 
   resources = await loadExcel();
-  renderResourcesOnMap(resources);
+
+  const categorySelect = document.getElementById("resource-category");
+  if (categorySelect) {
+    const categories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
+      categorySelect.appendChild(option);
+    });
+  }
+
+  const questionnaireForm = document.getElementById("questionnaire-form");
+  const skipBtn = document.getElementById("skip-questionnaire");
+  const backBtn = document.getElementById("back-to-questionnaire");
+
+  if (questionnaireForm) {
+    questionnaireForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const type = document.getElementById("resource-type").value;
+      const category = document.getElementById("resource-category").value;
+
+      let filtered = resources;
+
+      if (type === "online") {
+        filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() === "yes");
+        document.getElementById("map-description").style.display = "none";
+        document.getElementById("map-container").style.display = "none";
+        document.getElementById("search-form").style.display = "none";
+        document.getElementById("province-name").style.display = "none";
+        document.getElementById("online-resources-section").style.display = "block";
+      } else if (type === "inperson") {
+        filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() !== "yes");
+        document.getElementById("map-description").style.display = "block";
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("search-form").style.display = "flex";
+        document.getElementById("province-name").style.display = "block";
+        document.getElementById("online-resources-section").style.display = "none";
+      } else {
+        filtered = resources;
+        document.getElementById("map-description").style.display = "block";
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("search-form").style.display = "flex";
+        document.getElementById("province-name").style.display = "block";
+        document.getElementById("online-resources-section").style.display = "block";
+      }
+
+      const onlineCategorySelect = document.getElementById("online-category");
+      if (onlineCategorySelect) {
+        onlineCategorySelect.innerHTML = "";
+
+        if (category === "any") {
+          const optionAll = document.createElement("option");
+          optionAll.value = "all";
+          optionAll.textContent = "All Categories";
+          optionAll.selected = true;
+          onlineCategorySelect.appendChild(optionAll);
+
+          const categories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
+          categories.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat;
+            option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
+            onlineCategorySelect.appendChild(option);
+          });
+        } else {
+          filtered = filtered.filter(r => r.Category === category);
+          const option = document.createElement("option");
+          option.value = category;
+          option.textContent = resources.find(r => r.Category === category)?.OriginalCategory || category;
+          option.selected = true;
+          onlineCategorySelect.appendChild(option);
+        }
+      }
+
+      renderResourcesOnMap(filtered);
+      document.getElementById("questionnaire").style.display = "none";
+      document.getElementById("resourcesList").style.display = "block";
+      if (backBtn) backBtn.style.display = "inline-block";
+    });
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener("click", () => {
+      document.getElementById("questionnaire").style.display = "none";
+      document.getElementById("map-container").style.display = "block";
+      document.getElementById("resourcesList").style.display = "block";
+      document.getElementById("search-form").style.display = "flex";
+      document.getElementById("province-name").style.display = "block";
+      document.getElementById("online-resources-section").style.display = "block";
+
+      const onlineCategorySelect = document.getElementById("online-category");
+      if (onlineCategorySelect) {
+        onlineCategorySelect.innerHTML = "";
+        const optionAll = document.createElement("option");
+        optionAll.value = "all";
+        optionAll.textContent = "All Categories";
+        optionAll.selected = true;
+        onlineCategorySelect.appendChild(optionAll);
+
+        const categories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
+        categories.forEach(cat => {
+          const option = document.createElement("option");
+          option.value = cat;
+          option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
+          onlineCategorySelect.appendChild(option);
+        });
+      }
+
+      renderResourcesOnMap(resources);
+      if (backBtn) backBtn.style.display = "none";
+    });
+  }
+
+  if (backBtn) {
+    backBtn.style.display = "none";
+    backBtn.classList.add("styled-back-btn");
+    backBtn.addEventListener("click", () => {
+      document.getElementById("resourcesList").style.display = "none";
+      document.getElementById("map-container").style.display = "none";
+      document.getElementById("province-name").style.display = "none";
+      document.getElementById("map-description").style.display = "none";
+      document.getElementById("search-form").style.display = "none";
+      document.getElementById("online-resources-section").style.display = "none";
+      document.getElementById("questionnaire").style.display = "block";
+      backBtn.style.display = "none";
+    });
+  }
 
   const locationButton = document.createElement("button");
   locationButton.className = "custom-location-btn";
@@ -252,40 +414,35 @@ async function initMap() {
   });
 
   function runGeolocation(skipMarker) {
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-
-      if (!skipMarker) {
-        if (userMarker) {
-          userMarker.setPosition(userPos);
-        } else {
-          userMarker = new google.maps.Marker({
-            position: userPos,
-            map,
-            title: "You are here",
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: "#4285F4",
-              fillOpacity: 1,
-              strokeColor: "#fff",
-              strokeWeight: 2
-            }
-          });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        if (!skipMarker) {
+          if (userMarker) {
+            userMarker.setPosition(userPos);
+          } else {
+            userMarker = new google.maps.Marker({
+              position: userPos,
+              map,
+              title: "You are here",
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: "#4285F4",
+                fillOpacity: 1,
+                strokeColor: "#fff",
+                strokeWeight: 2
+              }
+            });
+          }
         }
-      }
-
-      map.setCenter(userPos);
-      map.setZoom(14);
-    },
-    () => {
-
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-}
-
+        map.setCenter(userPos);
+        map.setZoom(14);
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }
 
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
 
@@ -294,6 +451,7 @@ async function initMap() {
   const icon = document.querySelector(".search-icon");
   const clearBtn = document.getElementById("clear-search");
   icon.classList.add("disabled");
+
   function runSearch() {
     const query = input.value.trim().toLowerCase();
     if (!query) {
@@ -309,10 +467,7 @@ async function initMap() {
 
     const queryWords = query.split(/\s+/);
 
-    const onlineResources = resources.filter(
-      r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes"
-    );
-
+    const onlineResources = resources.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
     const inPersonMatches = resources.filter(r => {
       if (r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes") return false;
       const combined = `
@@ -391,6 +546,7 @@ async function initMap() {
   runGeolocation(true);
   setTimeout(() => runGeolocation(false), 200);
 }
+
 
 let ctrlApressed = false;
 document.addEventListener("keydown", (e) => {
