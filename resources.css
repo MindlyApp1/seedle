@@ -466,15 +466,6 @@
   background-color: #3a9c55;
 }
 
-#skip-questionnaire {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-#skip-questionnaire:hover {
-  background-color: #e0e0e0;
-}
-
 #back-to-questionnaire.styled-back-btn {
   display: none;
   position: fixed;

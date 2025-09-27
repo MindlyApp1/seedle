@@ -262,6 +262,32 @@
   font-family: 'Inter', sans-serif;
 }
 
+.working-with {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.working-with h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #10824c;
+  margin-bottom: 2.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.partners {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.partner-logo {
+  max-height: 80px;
+  width: auto;
+}
+
+
 @keyframes slideIn {
   to {
     opacity: 1;
