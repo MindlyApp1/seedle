@@ -108,9 +108,10 @@
 }
 
 .linkedin-icon {
+  text-decoration: none;
   position: absolute;
-  top: 198px;
-  left: 260px;
+  top: 198.5px;
+  left: 262px;
   color: #0a66c2;
   font-size: 1.65rem;
   background: #fff;
@@ -126,7 +127,6 @@
 
 .linkedin-icon:hover {
   color: #004182;
-  transform: scale(1.15);
   box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
