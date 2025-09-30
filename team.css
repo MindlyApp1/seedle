@@ -325,7 +325,7 @@
 .profile-card {
   text-align: center;
   max-width: 220px;
-  margin: 0 auto;
+  margin: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
