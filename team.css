@@ -310,7 +310,7 @@
 .liaison-grid {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0rem;
   flex-wrap: wrap;
   margin-top: 0rem;
 }
