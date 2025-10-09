@@ -44,6 +44,15 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return (R * c).toFixed(1);
 }
+function generateColorFromCategory(categoryName) {
+  let hash = 0;
+  for (let i = 0; i < categoryName.length; i++) {
+    hash = (hash << 5) - hash + categoryName.charCodeAt(i);
+  }
+
+  const color = ((hash & 0x00FFFFFF) | 0x7F000000).toString(16).slice(1);
+  return `#${color}`;
+}
 
 function renderResourcesOnMap(filtered) {
   markers.forEach(m => m.setMap(null));
@@ -59,16 +68,6 @@ function renderResourcesOnMap(filtered) {
   const onlineList = [];
   const infoWindow = new google.maps.InfoWindow();
 
-  const categoryColors = {
-    counseling: "#4cbb6a",
-    therapy: "#4285F4",
-    helpline: "#FF6B6B",
-    community: "#FFA500",
-    education: "#9C27B0",
-    support: "#00ACC1",
-    default: "#10824c"
-  };
-
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.trim().toLowerCase() === "yes";
     const hasCoords = r.Latitude && r.Longitude;
@@ -77,13 +76,7 @@ function renderResourcesOnMap(filtered) {
     } else if (hasCoords) {
       const normalizedCat = (r.Category || "").toLowerCase();
 
-      let color = categoryColors.default;
-      for (const key in categoryColors) {
-        if (normalizedCat.includes(key)) {
-          color = categoryColors[key];
-          break;
-        }
-      }
+      const color = generateColorFromCategory(normalizedCat);
 
       const marker = new google.maps.Marker({
         position: { lat: r.Latitude, lng: r.Longitude },
@@ -122,6 +115,7 @@ function renderResourcesOnMap(filtered) {
       bounds.extend({ lat: r.Latitude, lng: r.Longitude });
     }
   });
+
   if (!bounds.isEmpty()) {
     if (markers.length === 1) {
       map.setCenter(markers[0].getPosition());
@@ -133,6 +127,7 @@ function renderResourcesOnMap(filtered) {
     map.setCenter({ lat: 56.1304, lng: -106.3468 });
     map.setZoom(4);
   }
+}
   
 if (onlineList.length > 0) {
   let headerWrapper = onlineSection.querySelector(".section-header");
@@ -219,7 +214,6 @@ if (onlineList.length > 0) {
     renderOnlineCards(categoryFilter.value, onlineSearch.value);
   });
 
-}
 
 }
 async function initMap() {
