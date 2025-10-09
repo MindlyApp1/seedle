@@ -184,7 +184,7 @@ if (onlineList.length > 0) {
 
     onlineList.forEach(r => {
       const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
-      const matchCat = (selected === "all" || r.Category === selected);
+      const matchCat = (selected === "all" || r.Category === selected.toLowerCase());
       const matchText = (!query || cardText.includes(query));
 
       if (matchCat && matchText) {
