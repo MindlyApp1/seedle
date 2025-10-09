@@ -44,14 +44,29 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return (R * c).toFixed(1);
 }
-function generateColorFromCategory(categoryName) {
-  let hash = 0;
-  for (let i = 0; i < categoryName.length; i++) {
-    hash = (hash << 5) - hash + categoryName.charCodeAt(i);
+
+const distinctColors = [
+  "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
+  "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff",
+  "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
+  "#000075", "#808080"
+];
+
+const categoryColorMap = {};
+let colorIndex = 0;
+
+function getCategoryColor(category) {
+  const normalized = (category || "").toLowerCase().trim();
+  
+  if (categoryColorMap[normalized]) {
+    return categoryColorMap[normalized];
   }
 
-  const color = ((hash & 0x00FFFFFF) | 0x7F000000).toString(16).slice(1);
-  return `#${color}`;
+  const color = distinctColors[colorIndex % distinctColors.length];
+  categoryColorMap[normalized] = color;
+  colorIndex++;
+
+  return color;
 }
 
 function renderResourcesOnMap(filtered) {
@@ -76,7 +91,7 @@ function renderResourcesOnMap(filtered) {
     } else if (hasCoords) {
       const normalizedCat = (r.Category || "").toLowerCase();
 
-      const color = generateColorFromCategory(normalizedCat);
+      const color = getCategoryColor(normalizedCat);
 
       const marker = new google.maps.Marker({
         position: { lat: r.Latitude, lng: r.Longitude },
