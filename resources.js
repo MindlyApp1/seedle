@@ -72,9 +72,11 @@ function getCategoryColor(category) {
 function renderResourcesOnMap(filtered) {
   markers.forEach(m => m.setMap(null));
   markers = [];
+
   const inPersonSection = document.getElementById("inperson-resources-section");
   const onlineSection = document.getElementById("online-resources-section");
   inPersonSection.innerHTML = "";
+
   if (filtered.length === 0) {
     inPersonSection.innerHTML = `<p>No resources found.</p>`;
     return;
@@ -87,6 +89,7 @@ function renderResourcesOnMap(filtered) {
   filtered.forEach(r => {
     const isOnline = r.OnlineOnly && r.OnlineOnly.trim().toLowerCase() === "yes";
     const hasCoords = r.Latitude && r.Longitude;
+
     if (isOnline) {
       onlineList.push(r);
     } else if (hasCoords) {
@@ -113,6 +116,7 @@ function renderResourcesOnMap(filtered) {
           userPos && r.Latitude && r.Longitude
             ? `<p class="info-distance">${getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude)} km away</p>`
             : `<p class="info-distance">Distance unavailable</p>`;
+
         infoWindow.setContent(`
           <div class="info-card">
             <h2 class="info-title">${r.Name}</h2>
@@ -126,13 +130,13 @@ function renderResourcesOnMap(filtered) {
         `);
         infoWindow.open(map, marker);
       });
+
       markers.push(marker);
       bounds.extend({ lat: r.Latitude, lng: r.Longitude });
     }
   });
 
-  // ✅ Move the online resources rendering INSIDE here
-  if (onlineList.length > 0) {
+  if (onlineList.length > 0 && onlineSection) {
     let headerWrapper = onlineSection.querySelector(".section-header");
     let categoryFilter = document.getElementById("online-category");
     let onlineSearch = document.getElementById("online-search");
@@ -147,37 +151,40 @@ function renderResourcesOnMap(filtered) {
       onlineHeading.className = "online-heading";
       onlineHeading.textContent = "Online Resources";
       headerWrapper.appendChild(onlineHeading);
-
-      if (!onlineContainer) {
-        onlineContainer = document.createElement("div");
-        onlineContainer.className = "resources-list";
-        onlineSection.appendChild(onlineContainer);
-      }
     }
 
-    categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
-    const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat;
-      const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
-      option.textContent = pretty;
-      categoryFilter.appendChild(option);
-    });
+    if (!onlineContainer) {
+      onlineContainer = document.createElement("div");
+      onlineContainer.className = "resources-list";
+      onlineSection.appendChild(onlineContainer);
+    }
 
-    function renderOnlineCards(selected, searchQuery = "") {
+    if (categoryFilter) {
+      categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
+      const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
+
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
+        option.textContent = pretty;
+        categoryFilter.appendChild(option);
+      });
+    }
+
+    function renderOnlineCards(selected = "all", searchQuery = "") {
+      if (!onlineContainer) return;
       onlineContainer.innerHTML = "";
       const query = searchQuery.trim().toLowerCase();
 
       onlineList.forEach(r => {
         const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
-        const matchCat = (selected === "all" || r.Category === selected);
-        const matchText = (!query || cardText.includes(query));
+        const matchCat = selected === "all" || r.Category === selected;
+        const matchText = !query || cardText.includes(query);
 
         if (matchCat && matchText) {
           const card = document.createElement("div");
           card.className = "resource-card";
-
           if (firstOnlineRender) card.classList.add("initial-load");
 
           card.innerHTML = `
@@ -188,20 +195,32 @@ function renderResourcesOnMap(filtered) {
             <a href="${r.Link}" target="_blank">Visit Website</a>
           `;
           onlineContainer.appendChild(card);
-          if (firstOnlineRender)
+
+          if (firstOnlineRender) {
             card.addEventListener("animationend", () => card.classList.remove("initial-load"), { once: true });
+          }
         }
       });
+
       firstOnlineRender = false;
     }
 
     renderOnlineCards("all", "");
-    categoryFilter.addEventListener("change", () => {
-      renderOnlineCards(categoryFilter.value, onlineSearch.value);
-    });
-    onlineSearch.addEventListener("input", () => {
-      renderOnlineCards(categoryFilter.value, onlineSearch.value);
-    });
+
+    if (categoryFilter) {
+      categoryFilter.addEventListener("change", () => {
+        const val = categoryFilter.value;
+        const query = onlineSearch ? onlineSearch.value : "";
+        renderOnlineCards(val, query);
+      });
+    }
+
+    if (onlineSearch) {
+      onlineSearch.addEventListener("input", () => {
+        const val = categoryFilter ? categoryFilter.value : "all";
+        renderOnlineCards(val, onlineSearch.value);
+      });
+    }
   }
 
   if (!bounds.isEmpty()) {
@@ -215,71 +234,8 @@ function renderResourcesOnMap(filtered) {
     map.setCenter({ lat: 56.1304, lng: -106.3468 });
     map.setZoom(4);
   }
-  
-  categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
-  const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
-  categories.forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat;
-    const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
-    option.textContent = pretty;
-    categoryFilter.appendChild(option);
-  });
-
-  function renderOnlineCards(selected, searchQuery = "") {
-    onlineContainer.innerHTML = "";
-
-    const query = searchQuery.trim().toLowerCase();
-
-    onlineList.forEach(r => {
-      const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
-      const matchCat = (selected === "all" || r.Category === selected);
-      const matchText = (!query || cardText.includes(query));
-
-      if (matchCat && matchText) {
-        const card = document.createElement("div");
-        card.className = "resource-card";
-
-        if (firstOnlineRender) {
-          card.classList.add("initial-load");
-        }
-
-        card.setAttribute("data-category", r.Category);
-        card.setAttribute("data-text", cardText);
-        card.innerHTML = `
-          <h2>${r.Name}</h2>
-          <p><strong>${r.OriginalCategory || r.Category}</strong></p>
-          <p>${r.Description}</p>
-          <p>${r.Contact || ""}</p>
-          <a href="${r.Link}" target="_blank">Visit Website</a>
-        `;
-        onlineContainer.appendChild(card);
-
-        if (firstOnlineRender) {
-          card.addEventListener(
-            "animationend",
-            () => card.classList.remove("initial-load"),
-            { once: true }
-          );
-        }
-      }
-    });
-
-    firstOnlineRender = false;
-  }
-
-  renderOnlineCards("all", "");
-
-  categoryFilter.addEventListener("change", () => {
-    renderOnlineCards(categoryFilter.value, onlineSearch.value);
-  });
-
-  onlineSearch.addEventListener("input", () => {
-    renderOnlineCards(categoryFilter.value, onlineSearch.value);
-  });
-
-
 }
+
 async function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 56.1304, lng: -106.3468 },
