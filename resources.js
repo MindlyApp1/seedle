@@ -79,6 +79,7 @@ function renderResourcesOnMap(filtered) {
     inPersonSection.innerHTML = `<p>No resources found.</p>`;
     return;
   }
+
   const bounds = new google.maps.LatLngBounds();
   const onlineList = [];
   const infoWindow = new google.maps.InfoWindow();
@@ -90,7 +91,6 @@ function renderResourcesOnMap(filtered) {
       onlineList.push(r);
     } else if (hasCoords) {
       const normalizedCat = (r.Category || "").toLowerCase();
-
       const color = getCategoryColor(normalizedCat);
 
       const marker = new google.maps.Marker({
@@ -131,6 +131,79 @@ function renderResourcesOnMap(filtered) {
     }
   });
 
+  // ✅ Move the online resources rendering INSIDE here
+  if (onlineList.length > 0) {
+    let headerWrapper = onlineSection.querySelector(".section-header");
+    let categoryFilter = document.getElementById("online-category");
+    let onlineSearch = document.getElementById("online-search");
+    let onlineContainer = onlineSection.querySelector(".resources-list");
+
+    if (!headerWrapper) {
+      headerWrapper = document.createElement("div");
+      headerWrapper.className = "section-header";
+      onlineSection.appendChild(headerWrapper);
+
+      const onlineHeading = document.createElement("h2");
+      onlineHeading.className = "online-heading";
+      onlineHeading.textContent = "Online Resources";
+      headerWrapper.appendChild(onlineHeading);
+
+      if (!onlineContainer) {
+        onlineContainer = document.createElement("div");
+        onlineContainer.className = "resources-list";
+        onlineSection.appendChild(onlineContainer);
+      }
+    }
+
+    categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
+    const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
+      option.textContent = pretty;
+      categoryFilter.appendChild(option);
+    });
+
+    function renderOnlineCards(selected, searchQuery = "") {
+      onlineContainer.innerHTML = "";
+      const query = searchQuery.trim().toLowerCase();
+
+      onlineList.forEach(r => {
+        const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
+        const matchCat = (selected === "all" || r.Category === selected);
+        const matchText = (!query || cardText.includes(query));
+
+        if (matchCat && matchText) {
+          const card = document.createElement("div");
+          card.className = "resource-card";
+
+          if (firstOnlineRender) card.classList.add("initial-load");
+
+          card.innerHTML = `
+            <h2>${r.Name}</h2>
+            <p><strong>${r.OriginalCategory || r.Category}</strong></p>
+            <p>${r.Description}</p>
+            <p>${r.Contact || ""}</p>
+            <a href="${r.Link}" target="_blank">Visit Website</a>
+          `;
+          onlineContainer.appendChild(card);
+          if (firstOnlineRender)
+            card.addEventListener("animationend", () => card.classList.remove("initial-load"), { once: true });
+        }
+      });
+      firstOnlineRender = false;
+    }
+
+    renderOnlineCards("all", "");
+    categoryFilter.addEventListener("change", () => {
+      renderOnlineCards(categoryFilter.value, onlineSearch.value);
+    });
+    onlineSearch.addEventListener("input", () => {
+      renderOnlineCards(categoryFilter.value, onlineSearch.value);
+    });
+  }
+
   if (!bounds.isEmpty()) {
     if (markers.length === 1) {
       map.setCenter(markers[0].getPosition());
@@ -142,31 +215,7 @@ function renderResourcesOnMap(filtered) {
     map.setCenter({ lat: 56.1304, lng: -106.3468 });
     map.setZoom(4);
   }
-}
   
-if (onlineList.length > 0) {
-  let headerWrapper = onlineSection.querySelector(".section-header");
-  let categoryFilter = document.getElementById("online-category");
-  let onlineSearch = document.getElementById("online-search");
-  let onlineContainer = onlineSection.querySelector(".resources-list");
-
-  if (!headerWrapper) {
-    headerWrapper = document.createElement("div");
-    headerWrapper.className = "section-header";
-    onlineSection.appendChild(headerWrapper);
-
-    const onlineHeading = document.createElement("h2");
-    onlineHeading.className = "online-heading";
-    onlineHeading.textContent = "Online Resources";
-    headerWrapper.appendChild(onlineHeading);
-
-    if (!onlineContainer) {
-      onlineContainer = document.createElement("div");
-      onlineContainer.className = "resources-list";
-      onlineSection.appendChild(onlineContainer);
-    }
-  }
-
   categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
   const categories = [...new Set(onlineList.map(r => r.Category).filter(Boolean))];
   categories.forEach(cat => {
@@ -184,7 +233,7 @@ if (onlineList.length > 0) {
 
     onlineList.forEach(r => {
       const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
-      const matchCat = (selected === "all" || r.Category === selected.toLowerCase());
+      const matchCat = (selected === "all" || r.Category === selected);
       const matchText = (!query || cardText.includes(query));
 
       if (matchCat && matchText) {
