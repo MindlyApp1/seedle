@@ -2,8 +2,8 @@ import pandas as pd
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-excel_path = "assets/canadianMentalHealthResourcesVerified.xlsx"
-output_path = "assets/canadianMentalHealthResourcesVerifiedFinal.xlsx"
+excel_path = "assets/canadianMentalHealthResources.xlsx"
+output_path = "assets/canadianMentalHealthResourcesFinal.xlsx"
 
 print("Loading dataset...")
 df = pd.read_excel(excel_path)
