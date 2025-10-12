@@ -1,4 +1,5 @@
-const excelFilePath = "assets/canadianMentalHealthResources.xlsx";
+
+const excelFilePath = "assets/canadianMentalHealthResourcesVerified.xlsx";
 
 let resources = [];
 let map;
