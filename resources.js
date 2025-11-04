@@ -88,7 +88,6 @@ function getCategoryColor(category) {
   return color;
 }
 
-
 function renderResourcesOnMap(filtered) {
   markers.forEach(m => m.setMap(null));
   markers = [];
@@ -367,6 +366,12 @@ async function initMap() {
       uniWrapper.style.display = typeSelect.value === "inperson" ? "block" : "none";
     });
 
+    uniSelect.addEventListener("change", () => {
+      if (typeSelect.value === "inperson") {
+        updateCategoryDropdown(uniSelect.value);
+      }
+    });
+
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const type = typeSelect.value;
@@ -433,6 +438,11 @@ async function initMap() {
 
         renderResourcesOnMap(filtered);
       }
+
+      if (type === "inperson") {
+        updateCategoryDropdown(selectedUni);
+      }
+
 
       document.getElementById("questionnaire").style.display = "none";
       document.getElementById("resourcesList").style.display = "block";
@@ -541,25 +551,56 @@ async function initMap() {
   if (mapCategorySelect) {
     mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
 
-    const inPersonResources = resources.filter(
-      r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes"
-    );
-    const categories = [...new Set(inPersonResources.map(r => r.Category).filter(Boolean))];
+    function updateCategoryDropdown(selectedUni = "all") {
+      mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
 
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat;
-      option.textContent =
-        inPersonResources.find(r => r.Category === cat)?.OriginalCategory || cat;
-      mapCategorySelect.appendChild(option);
-    });
+      let filteredResources = resources.filter(
+        r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes"
+      );
+
+      if (selectedUni !== "all") {
+        const uni = universities.find(u => u.Name === selectedUni);
+        if (uni && uni.Latitude && uni.Longitude) {
+          filteredResources = filteredResources.filter(r =>
+            r.Latitude && r.Longitude &&
+            getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+          );
+        }
+      }
+
+      const categories = [...new Set(filteredResources.map(r => r.Category).filter(Boolean))];
+
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent =
+          filteredResources.find(r => r.Category === cat)?.OriginalCategory || cat;
+        mapCategorySelect.appendChild(option);
+      });
+    }
+
 
     mapCategorySelect.addEventListener("change", () => {
-      const selected = mapCategorySelect.value;
+      const selectedCategory = mapCategorySelect.value;
+      const typeSelect = document.getElementById("resource-type");
+      const uniSelect = document.getElementById("university-select");
+      const selectedUni = uniSelect ? uniSelect.value : "all";
 
-      let filtered = inPersonResources;
-      if (selected !== "all") {
-        filtered = filtered.filter(r => r.Category === selected);
+      let filtered = resources.filter(r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes");
+
+      if (typeSelect && typeSelect.value === "inperson" && selectedUni !== "all") {
+        const uni = universities.find(u => u.Name === selectedUni);
+        if (uni && uni.Latitude && uni.Longitude) {
+          filtered = filtered.filter(r =>
+            r.Latitude &&
+            r.Longitude &&
+            getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+          );
+        }
+      }
+
+      if (selectedCategory !== "all") {
+        filtered = filtered.filter(r => r.Category === selectedCategory);
       }
 
       window.preventAutoZoom = true;
