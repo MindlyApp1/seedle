@@ -36,6 +36,7 @@
       <p id="map-description" class="fade-up" style="display:none;">
         Explore trusted resources near you on the map below.
       </p>
+
       <div id="questionnaire" class="fade-in">
         <h2>Find the right resources for you</h2>
         <form id="questionnaire-form">
@@ -59,18 +60,25 @@
         </form>
       </div>
 
-      <form id="search-form" class="search-wrapper" style="display:none;">
-        <input 
-          type="text" 
-          id="map-search" 
-          placeholder="Search in-person resources..." 
-        />
-        <i class="fa fa-search search-icon"></i>
-        <span id="clear-search">&times;</span>
-      </form>
-
       <div id="map-container" class="fade-in delay-3" style="display:none;">
         <div id="map"></div>
+
+        <div class="map-top-bar">
+          <form id="search-form" class="search-wrapper">
+            <input 
+              type="text" 
+              id="map-search" 
+              placeholder="Search in-person resources..." 
+            />
+            <i class="fa fa-search search-icon"></i>
+            <span id="clear-search">&times;</span>
+          </form>
+
+          <select id="map-category">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+
       </div>
 
       <h3 id="province-name" class="fade-in delay-4" style="display:none;"></h3>

@@ -7,6 +7,17 @@ let markers = [];
 let userPos = null;
 let firstOnlineRender = true;
 
+const categoryColorMap = {};
+let colorIndex = 0;
+
+const distinctColors = [
+  "#FF1744", "#00E676", "#FFEA00", "#2979FF", "#FF9100", "#D500F9",
+  "#00E5FF", "#FF4081", "#76FF03", "#FF6D00", "#0091EA", "#C51162",
+  "#64DD17", "#FFD600", "#AA00FF", "#FF3D00", "#00B8D4", "#AEEA00",
+  "#6200EA", "#FFAB00"
+];
+
+
 async function loadExcel() {
   const response = await fetch(excelFilePath);
   if (!response.ok) return [];
@@ -64,29 +75,18 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return (R * c).toFixed(1);
 }
 
-const distinctColors = [
-  "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
-  "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff",
-  "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
-  "#000075", "#808080"
-];
-
-const categoryColorMap = {};
-let colorIndex = 0;
-
 function getCategoryColor(category) {
   const normalized = (category || "").toLowerCase().trim();
-  
-  if (categoryColorMap[normalized]) {
-    return categoryColorMap[normalized];
-  }
+  if (!normalized) return "#808080";
+
+  if (categoryColorMap[normalized]) return categoryColorMap[normalized];
 
   const color = distinctColors[colorIndex % distinctColors.length];
   categoryColorMap[normalized] = color;
   colorIndex++;
-
   return color;
 }
+
 
 function renderResourcesOnMap(filtered) {
   markers.forEach(m => m.setMap(null));
@@ -243,11 +243,13 @@ function renderResourcesOnMap(filtered) {
   }
 
   if (!bounds.isEmpty()) {
-    if (markers.length === 1) {
-      map.setCenter(markers[0].getPosition());
-      map.setZoom(12);
-    } else {
-      map.fitBounds(bounds);
+    if (!window.preventAutoZoom) {
+      if (markers.length === 1) {
+        map.setCenter(markers[0].getPosition());
+        map.setZoom(12);
+      } else {
+        map.fitBounds(bounds);
+      }
     }
   } else {
     map.setCenter({ lat: 56.1304, lng: -106.3468 });
@@ -318,6 +320,9 @@ async function initMap() {
   resources = await loadExcel();
   const universities = await loadUniversities();
   renderUniversitiesOnMap(universities);
+
+  const allCategories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
+  allCategories.forEach(cat => getCategoryColor(cat));
 
 
   const categorySelect = document.getElementById("resource-category");
@@ -524,6 +529,38 @@ async function initMap() {
   const clearBtn = document.getElementById("clear-search");
   icon.classList.add("disabled");
 
+  const mapCategorySelect = document.getElementById("map-category");
+
+  if (mapCategorySelect) {
+    mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
+
+    const inPersonResources = resources.filter(
+      r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes"
+    );
+    const categories = [...new Set(inPersonResources.map(r => r.Category).filter(Boolean))];
+
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent =
+        inPersonResources.find(r => r.Category === cat)?.OriginalCategory || cat;
+      mapCategorySelect.appendChild(option);
+    });
+
+    mapCategorySelect.addEventListener("change", () => {
+      const selected = mapCategorySelect.value;
+
+      let filtered = inPersonResources;
+      if (selected !== "all") {
+        filtered = filtered.filter(r => r.Category === selected);
+      }
+
+      window.preventAutoZoom = true;
+      renderResourcesOnMap(filtered);
+      window.preventAutoZoom = false;
+    });
+  }
+
   function runSearch() {
     const query = input.value.trim().toLowerCase();
     if (!query) {
@@ -615,10 +652,10 @@ async function initMap() {
     renderResourcesOnMap(resources);
   });
 
+  
   runGeolocation(true);
   setTimeout(() => runGeolocation(false), 200);
 }
-
 
 let ctrlApressed = false;
 document.addEventListener("keydown", (e) => {
