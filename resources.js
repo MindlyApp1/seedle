@@ -6,6 +6,7 @@ let map;
 let markers = [];
 let userPos = null;
 let firstOnlineRender = true;
+let universityMarkers = [];
 
 const categoryColorMap = {};
 let colorIndex = 0;
@@ -257,8 +258,16 @@ function renderResourcesOnMap(filtered) {
   }
 }
 
-function renderUniversitiesOnMap(universities) {
+function renderUniversitiesOnMap(universities, selectedUni = "all") {
   if (!map || !universities.length) return;
+
+  universityMarkers.forEach(m => m.setMap(null));
+  universityMarkers = [];
+
+  let unisToShow = universities;
+  if (selectedUni !== "all") {
+    unisToShow = universities.filter(u => u.Name === selectedUni);
+  }
 
   const uniIcon = {
     path: "M12 2L1 7v2h22V7L12 2zm-1 7v9H7v-9H4v9H2v2h20v-2h-2v-9h-3v9h-4V9h-2z",
@@ -270,7 +279,7 @@ function renderUniversitiesOnMap(universities) {
     anchor: new google.maps.Point(12, 24)
   };
 
-  universities.forEach(u => {
+  unisToShow.forEach(u => {
     if (!u.Latitude || !u.Longitude) return;
 
     const marker = new google.maps.Marker({
@@ -290,8 +299,10 @@ function renderUniversitiesOnMap(universities) {
         </div>`
     });
     marker.addListener("click", () => info.open(map, marker));
+    universityMarkers.push(marker);
   });
 }
+
 
 async function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -341,107 +352,103 @@ async function initMap() {
   const backBtn = document.getElementById("back-to-questionnaire");
 
   if (questionnaireForm) {
+    const typeSelect = document.getElementById("resource-type");
+    const uniWrapper = document.getElementById("university-wrapper");
+    const uniSelect = document.getElementById("university-select");
+
+    universities.forEach(u => {
+      const option = document.createElement("option");
+      option.value = u.Name;
+      option.textContent = u.Name;
+      uniSelect.appendChild(option);
+    });
+
+    typeSelect.addEventListener("change", () => {
+      uniWrapper.style.display = typeSelect.value === "inperson" ? "block" : "none";
+    });
+
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const type = document.getElementById("resource-type").value;
-      const category = document.getElementById("resource-category").value;
+      const type = typeSelect.value;
+      const selectedUni = uniSelect.value;
+
+      if (!type) {
+        alert("Please choose Online or In-person to continue.");
+        return;
+      }
+
+      const mainHeading = document.querySelector(".resources-container h1");
+      const mapDescription = document.getElementById("map-description");
+
+      if (type === "online") {
+        mainHeading.textContent = "Online Resources";
+        mapDescription.textContent = "Explore accessible mental health supports you can use anytime, anywhere.";
+      } else if (type === "inperson") {
+        mainHeading.textContent = "In-Person Resources";
+
+        if (selectedUni && selectedUni !== "all") {
+          mapDescription.textContent = `Explore trusted in-person resources near ${selectedUni} on the map below.`;
+        } else {
+          mapDescription.textContent = "Explore trusted in-person resources across Canadian universities on the map below.";
+        }
+      }
 
       let filtered = resources;
 
       if (type === "online") {
         filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() === "yes");
-        document.getElementById("map-description").style.display = "none";
+
+        document.getElementById("online-resources-section").style.display = "block";
         document.getElementById("map-container").style.display = "none";
+        document.getElementById("map-description").style.display = "none";
         document.getElementById("search-form").style.display = "none";
         document.getElementById("province-name").style.display = "none";
-        document.getElementById("online-resources-section").style.display = "block";
-      } else if (type === "inperson") {
+        document.getElementById("inperson-resources-section").innerHTML = "";
+
+        renderResourcesOnMap(filtered);
+      } 
+      else if (type === "inperson") {
         filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() !== "yes");
-        document.getElementById("map-description").style.display = "block";
-        document.getElementById("map-container").style.display = "block";
-        document.getElementById("search-form").style.display = "flex";
-        document.getElementById("province-name").style.display = "block";
-        document.getElementById("online-resources-section").style.display = "none";
-      } else {
-        filtered = resources;
-        document.getElementById("map-description").style.display = "block";
-        document.getElementById("map-container").style.display = "block";
-        document.getElementById("search-form").style.display = "flex";
-        document.getElementById("province-name").style.display = "block";
-        document.getElementById("online-resources-section").style.display = "block";
-      }
 
-      const onlineCategorySelect = document.getElementById("online-category");
-      if (onlineCategorySelect) {
-        onlineCategorySelect.innerHTML = "";
-
-        if (category === "any") {
-          const optionAll = document.createElement("option");
-          optionAll.value = "all";
-          optionAll.textContent = "All Categories";
-          optionAll.selected = true;
-          onlineCategorySelect.appendChild(optionAll);
-
-          const categories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
-          categories.forEach(cat => {
-            const option = document.createElement("option");
-            option.value = cat;
-            option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
-            onlineCategorySelect.appendChild(option);
-          });
+        if (selectedUni !== "all") {
+          const uni = universities.find(u => u.Name === selectedUni);
+          if (uni && uni.Latitude && uni.Longitude) {
+            filtered = filtered.filter(r =>
+              r.Latitude && r.Longitude &&
+              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+            );
+            map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
+            map.setZoom(12);
+            renderUniversitiesOnMap(universities, selectedUni);
+          }
         } else {
-          filtered = filtered.filter(r => r.Category === category);
-          const option = document.createElement("option");
-          option.value = category;
-          option.textContent = resources.find(r => r.Category === category)?.OriginalCategory || category;
-          option.selected = true;
-          onlineCategorySelect.appendChild(option);
+          renderUniversitiesOnMap(universities, "all");
         }
+
+        document.getElementById("online-resources-section").style.display = "none";
+        document.getElementById("map-description").style.display = "block";
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("search-form").style.display = "flex";
+        document.getElementById("province-name").style.display = "block";
+
+        renderResourcesOnMap(filtered);
       }
 
-      renderResourcesOnMap(filtered);
       document.getElementById("questionnaire").style.display = "none";
       document.getElementById("resourcesList").style.display = "block";
       if (backBtn) backBtn.style.display = "inline-block";
     });
   }
 
-  if (skipBtn) {
-    skipBtn.addEventListener("click", () => {
-      document.getElementById("questionnaire").style.display = "none";
-      document.getElementById("map-container").style.display = "block";
-      document.getElementById("resourcesList").style.display = "block";
-      document.getElementById("search-form").style.display = "flex";
-      document.getElementById("province-name").style.display = "block";
-      document.getElementById("online-resources-section").style.display = "block";
 
-      const onlineCategorySelect = document.getElementById("online-category");
-      if (onlineCategorySelect) {
-        onlineCategorySelect.innerHTML = "";
-        const optionAll = document.createElement("option");
-        optionAll.value = "all";
-        optionAll.textContent = "All Categories";
-        optionAll.selected = true;
-        onlineCategorySelect.appendChild(optionAll);
 
-        const categories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
-        categories.forEach(cat => {
-          const option = document.createElement("option");
-          option.value = cat;
-          option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
-          onlineCategorySelect.appendChild(option);
-        });
-      }
-
-      renderResourcesOnMap(resources);
-      if (backBtn) backBtn.style.display = "none";
-    });
-  }
 
   if (backBtn) {
     backBtn.style.display = "none";
     backBtn.classList.add("styled-back-btn");
     backBtn.addEventListener("click", () => {
+      document.querySelector(".resources-container h1").textContent = "Resources";
+      document.getElementById("map-description").textContent = "Explore trusted in-person resources across Canadian universities on the map below.";
       document.getElementById("resourcesList").style.display = "none";
       document.getElementById("map-container").style.display = "none";
       document.getElementById("province-name").style.display = "none";

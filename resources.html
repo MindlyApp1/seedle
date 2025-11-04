@@ -34,7 +34,7 @@
     <div class="resources-container">
       <h1 class="fade-in">Resources</h1>
       <p id="map-description" class="fade-up" style="display:none;">
-        Explore trusted resources near you on the map below.
+        Explore trusted in-person resources across Canadian universities on the map below.
       </p>
 
       <div id="questionnaire" class="fade-in">
@@ -42,22 +42,25 @@
         <form id="questionnaire-form">
           <label>
             How would you like to access support?
-            <select id="resource-type">
-              <option value="any">No preference</option>
+            <select id="resource-type" required>
+              <option value="">Select an option...</option>
               <option value="online">Online (phone, chat, video, text)</option>
-              <option value="inperson">In-person (visit a centre, clinic, or community space)</option>
+              <option value="inperson">In-person (visit a centre or campus resource)</option>
             </select>
           </label>
-          <label>
-            What type of help do you need most right now?
-            <select id="resource-category">
-              <option value="any">No preference</option>
+
+          <label id="university-wrapper" style="display:none;">
+            Which university are you part of?
+            <select id="university-select">
+              <option value="all">No specific university</option>
             </select>
           </label>
+
           <div class="questionnaire-buttons">
             <button type="submit">Show Resources</button>
           </div>
         </form>
+
       </div>
 
       <div id="map-container" class="fade-in delay-3" style="display:none;">
@@ -78,7 +81,6 @@
             <option value="all">All Categories</option>
           </select>
         </div>
-
       </div>
 
       <h3 id="province-name" class="fade-in delay-4" style="display:none;"></h3>
@@ -87,7 +89,6 @@
 
       <div id="resourcesList" class="fade-in delay-5" style="display:none;">
         <div id="online-resources-section">
-          <h2 class="online-heading">Online Resources</h2>
           <div class="section-header">
             <input 
               type="text" 
