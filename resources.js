@@ -34,6 +34,24 @@ async function loadExcel() {
   });
 }
 
+async function loadUniversities() {
+  const response = await fetch("assets/canadianUniversities.xlsx");
+  if (!response.ok) return [];
+  const arrayBuffer = await response.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer, { type: "array" });
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+  return json.map(u => ({
+    Name: u.University || "",
+    City: u.City || "",
+    Address: u.Address || "",
+    Latitude: u.Latitude && !isNaN(parseFloat(u.Latitude)) ? parseFloat(u.Latitude) : null,
+    Longitude: u.Longitude && !isNaN(parseFloat(u.Longitude)) ? parseFloat(u.Longitude) : null
+  }));
+}
+
+
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -237,6 +255,42 @@ function renderResourcesOnMap(filtered) {
   }
 }
 
+function renderUniversitiesOnMap(universities) {
+  if (!map || !universities.length) return;
+
+  const uniIcon = {
+    path: "M12 2L1 7v2h22V7L12 2zm-1 7v9H7v-9H4v9H2v2h20v-2h-2v-9h-3v9h-4V9h-2z",
+    fillColor: "#1E88E5",
+    fillOpacity: 1,
+    strokeColor: "#0D47A1",
+    strokeWeight: 1.5,
+    scale: 1.6,
+    anchor: new google.maps.Point(12, 24)
+  };
+
+  universities.forEach(u => {
+    if (!u.Latitude || !u.Longitude) return;
+
+    const marker = new google.maps.Marker({
+      position: { lat: u.Latitude, lng: u.Longitude },
+      map,
+      title: u.Name,
+      icon: uniIcon,
+      zIndex: 5
+    });
+
+    const info = new google.maps.InfoWindow({
+      content: `
+        <div class="info-card">
+          <h2>${u.Name}</h2>
+          <p>${u.Address}</p>
+          <p>${u.City}</p>
+        </div>`
+    });
+    marker.addListener("click", () => info.open(map, marker));
+  });
+}
+
 async function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 56.1304, lng: -106.3468 },
@@ -262,6 +316,9 @@ async function initMap() {
   });
 
   resources = await loadExcel();
+  const universities = await loadUniversities();
+  renderUniversitiesOnMap(universities);
+
 
   const categorySelect = document.getElementById("resource-category");
   if (categorySelect) {
