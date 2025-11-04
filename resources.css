@@ -53,7 +53,11 @@
   opacity: 0;
   transform: translateY(20px);
   animation: fadeSlideIn 0.9s ease-out forwards;
-  animation-delay: 0.6s;
+  animation-delay: 0.2s;
+}
+
+.resource-card.initial-load {
+  animation-delay: 0.8s;
 }
 
 #map-container {
@@ -172,7 +176,7 @@
   margin-left: 0;
   opacity: 0;
   animation: fadeSlideIn 0.8s ease-out forwards;
-  animation-delay: 0.6s;
+  animation-delay: 0.2s;
 }
 
 #online-search:focus {
@@ -249,7 +253,7 @@
   opacity: 0;
   transform: translateY(20px);
   animation: fadeSlideIn 0.6s ease-out forwards;
-  animation-delay: 1.2s;
+  animation-delay: 0.2s;
 }
 
 .resource-card:hover {
@@ -305,7 +309,7 @@
   margin-left: auto;
   opacity: 0;
   animation: fadeSlideIn 0.8s ease-out forwards;
-  animation-delay: 0.6s;
+  animation-delay: 0.2s;
 }
 
 
@@ -363,7 +367,7 @@
   font-weight: 600;
   color: #4cbb6a;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
 }
 
 .info-link:hover {
