@@ -47,7 +47,7 @@ async function loadExcel() {
 }
 
 async function loadUniversities() {
-  const response = await fetch("assets/canadianUniversities.xlsx");
+  const response = await fetch("assets/canadianUniversitiesAndColleges.xlsx");
   if (!response.ok) return [];
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
