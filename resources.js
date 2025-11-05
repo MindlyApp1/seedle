@@ -8,6 +8,8 @@ let userPos = null;
 let firstOnlineRender = true;
 let universityMarkers = [];
 let universities = [];
+let currentUni = null;
+let currentType = null;
 
 const categoryColorMap = {};
 let colorIndex = 0;
@@ -416,6 +418,14 @@ async function initMap() {
       const type = typeSelect.value;
       const selectedUni = uniSelect.value;
 
+      if (type === "inperson") {
+        currentType = "inperson";
+        currentUni = selectedUni;
+      } else if (type === "online") {
+        currentType = "online";
+        currentUni = null;
+      }
+
       if (!type) {
         alert("Please choose Online or In-person to continue.");
         return;
@@ -556,11 +566,14 @@ async function initMap() {
       icon.classList.remove("active", "toggled");
       icon.style.display = "block";
       clearBtn.style.display = "none";
-      renderResourcesOnMap(resources);
+
+      const filtered = getActiveFilteredResources();
+      renderResourcesOnMap(filtered);
     }
 
     runGeolocation(false);
   });
+
 
   function runGeolocation(skipMarker) {
     navigator.geolocation.getCurrentPosition(
@@ -640,7 +653,6 @@ async function initMap() {
       const uniSelect = document.getElementById("university-select");
       const selectedUni = uniSelect ? uniSelect.value : "all";
       const type = typeSelect ? typeSelect.value : "";
-
       let filtered = [...resources];
 
       if (type === "online") {
@@ -670,24 +682,45 @@ async function initMap() {
     });
   }
 
+  function getActiveFilteredResources() {
+    let filtered = [...resources];
+
+    if (currentType === "online") {
+      filtered = filtered.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
+    } else if (currentType === "inperson" && currentUni) {
+      const uni = universities.find(u => u.Name === currentUni);
+      if (uni && uni.Latitude && uni.Longitude) {
+        filtered = filtered.filter(r =>
+          r.Latitude &&
+          r.Longitude &&
+          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+        );
+      }
+    }
+
+    return filtered;
+  }
+
   function runSearch() {
     const query = input.value.trim().toLowerCase();
+
     if (!query) {
-      renderResourcesOnMap(resources);
+      const filtered = getActiveFilteredResources();
+      renderResourcesOnMap(filtered);
       icon.classList.remove("active", "toggled");
       icon.style.display = "block";
       clearBtn.style.display = "none";
       return;
     }
+
+    const baseResources = getActiveFilteredResources();
     icon.classList.add("active", "toggled");
     icon.style.display = "none";
     clearBtn.style.display = "block";
 
     const queryWords = query.split(/\s+/);
 
-    const onlineResources = resources.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
-    const inPersonMatches = resources.filter(r => {
-      if (r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes") return false;
+    const matched = baseResources.filter(r => {
       const combined = `
         ${String(r.Name || "")}
         ${String(r.City || "")}
@@ -695,25 +728,63 @@ async function initMap() {
         ${String(r.Category || "")}
         ${String(r.Address || "")}
         ${String(r.Contact || "")}
+        ${String(r.Description || "")}
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
     });
 
-    const matched = [...inPersonMatches, ...onlineResources];
     renderResourcesOnMap(matched);
 
-    if (inPersonMatches.length === 1 && inPersonMatches[0].Latitude && inPersonMatches[0].Longitude) {
-      map.setCenter({ lat: inPersonMatches[0].Latitude, lng: inPersonMatches[0].Longitude });
-      map.setZoom(12);
-    } else if (inPersonMatches.length > 1) {
-      const bounds = new google.maps.LatLngBounds();
-      inPersonMatches.forEach(r => {
-        if (r.Latitude && r.Longitude) {
-          bounds.extend({ lat: r.Latitude, lng: r.Longitude });
-        }
-      });
-      if (!bounds.isEmpty()) map.fitBounds(bounds);
+    function findResourceMarker(lat, lng) {
+      return markers.find(
+        m =>
+          Math.abs(m.getPosition().lat() - lat) < 0.0001 &&
+          Math.abs(m.getPosition().lng() - lng) < 0.0001
+      );
     }
+
+    if (matched.length === 1 && matched[0].Latitude && matched[0].Longitude) {
+      const r = matched[0];
+      const marker = findResourceMarker(r.Latitude, r.Longitude);
+      if (marker) {
+        google.maps.event.trigger(marker, "click");
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(() => marker.setAnimation(null), 1500);
+        map.setCenter({ lat: r.Latitude, lng: r.Longitude });
+        map.setZoom(14);
+      }
+      return;
+    }
+
+    if (matched.length > 1) {
+      const q = query.toLowerCase();
+      const scored = matched.map(r => {
+        const name = r.Name?.toLowerCase() || "";
+        const address = r.Address?.toLowerCase() || "";
+        const desc = r.Description?.toLowerCase() || "";
+        const score =
+          (name.includes(q) ? 3 : 0) +
+          (address.includes(q) ? 2 : 0) +
+          (desc.includes(q) ? 1 : 0);
+        return { r, score };
+      });
+
+      const best = scored.sort((a, b) => b.score - a.score)[0];
+      const chosen = best?.r;
+
+      if (chosen && chosen.Latitude && chosen.Longitude && best.score > 0) {
+        const marker = findResourceMarker(chosen.Latitude, chosen.Longitude);
+        if (marker) {
+          google.maps.event.trigger(marker, "click");
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+          setTimeout(() => marker.setAnimation(null), 1500);
+          map.setCenter({ lat: chosen.Latitude, lng: chosen.Longitude });
+          map.setZoom(14);
+        }
+      }
+    }
+
+    window.preventAutoZoom = true;
   }
 
   input.addEventListener("input", () => {
@@ -722,7 +793,8 @@ async function initMap() {
       icon.classList.remove("active", "toggled");
       icon.style.display = "block";
       clearBtn.style.display = "none";
-      renderResourcesOnMap(resources);
+      const filtered = getActiveFilteredResources();
+      renderResourcesOnMap(filtered);
     } else {
       icon.classList.remove("disabled");
       icon.classList.add("active");
@@ -745,7 +817,8 @@ async function initMap() {
       icon.classList.remove("active", "toggled");
       icon.style.display = "block";
       clearBtn.style.display = "none";
-      renderResourcesOnMap(resources);
+      const filtered = getActiveFilteredResources();
+      renderResourcesOnMap(filtered);
       return;
     }
     if (input.value.trim().length === 0) return;
@@ -758,7 +831,8 @@ async function initMap() {
     icon.classList.remove("active", "toggled");
     icon.style.display = "block";
     clearBtn.style.display = "none";
-    renderResourcesOnMap(resources);
+    const filtered = getActiveFilteredResources();
+    renderResourcesOnMap(filtered);
   });
 }
 
