@@ -329,7 +329,6 @@ function renderUniversitiesOnMap(universities, selectedUni = "all") {
   }
 }
 
-
 async function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 56.1304, lng: -106.3468 },
@@ -360,7 +359,6 @@ async function initMap() {
 
   const allCategories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
   allCategories.forEach(cat => getCategoryColor(cat));
-
 
   const categorySelect = document.getElementById("resource-category");
   if (categorySelect) {
@@ -417,7 +415,6 @@ async function initMap() {
         mapDescription.textContent = "Explore accessible mental health supports you can use anytime, anywhere.";
       } else if (type === "inperson") {
         mainHeading.textContent = "In-Person Resources";
-
         if (selectedUni && selectedUni !== "all") {
           mapDescription.textContent = `Explore trusted in-person resources near ${selectedUni} on the map below.`;
         } else {
@@ -438,20 +435,29 @@ async function initMap() {
         document.getElementById("inperson-resources-section").innerHTML = "";
 
         renderResourcesOnMap(filtered);
-      } 
+      }
+
       else if (type === "inperson") {
         filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() !== "yes");
 
         if (selectedUni !== "all") {
-          const uni = universities.find(u => u.Name === selectedUni);
+          const uni = universities.find(
+            u => u.Name && u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
+          );
+
           if (uni && uni.Latitude && uni.Longitude) {
             filtered = filtered.filter(r =>
-              r.Latitude && r.Longitude &&
+              r.Latitude &&
+              r.Longitude &&
               getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
             );
+
+            renderUniversitiesOnMap([uni], uni.Name);
+
             map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
-            map.setZoom(12);
-            renderUniversitiesOnMap(universities, selectedUni);
+            map.setZoom(13);
+          } else {
+            renderUniversitiesOnMap(universities, "all");
           }
         } else {
           renderUniversitiesOnMap(universities, "all");
@@ -470,14 +476,11 @@ async function initMap() {
         updateCategoryDropdown(selectedUni);
       }
 
-
       document.getElementById("questionnaire").style.display = "none";
       document.getElementById("resourcesList").style.display = "block";
       if (backBtn) backBtn.style.display = "inline-block";
     });
   }
-
-
 
 
   if (backBtn) {
