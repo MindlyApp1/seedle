@@ -503,6 +503,11 @@
   border-color: #2d7a46;
 }
 
+#university-select {
+  max-width: 350px;
+  width: 100%;
+  display: inline-block;
+}
 
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(20px); }

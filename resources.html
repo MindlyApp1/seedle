@@ -51,7 +51,7 @@
 
           <label id="university-wrapper" style="display:none;">
             Which university are you part of?
-            <select id="university-select" required>
+            <select id="university-select">
               <option value="" selected disabled>Select a university...</option>
             </select>
           </label>
@@ -60,7 +60,6 @@
             <button type="submit">Show Resources</button>
           </div>
         </form>
-
       </div>
 
       <div id="map-container" class="fade-in delay-3" style="display:none;">
@@ -85,8 +84,6 @@
 
       <h3 id="province-name" class="fade-in delay-4" style="display:none;"></h3>
 
-      <button type="button" id="back-to-questionnaire" style="display:none;">Back</button>
-
       <div id="resourcesList" class="fade-in delay-5" style="display:none;">
         <div id="online-resources-section">
           <div class="section-header">
@@ -102,6 +99,8 @@
         </div>
 
         <div id="inperson-resources-section" class="resources-list"></div>
+
+        <button type="button" id="back-to-questionnaire" style="display:none;">Back</button>
       </div>
     </div>
   </main>
