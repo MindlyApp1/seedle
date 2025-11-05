@@ -43,3 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   animateSeed();
 });
+
+document.querySelectorAll("nav a").forEach(link => {
+  link.addEventListener("mouseover", () => {
+    fetch(link.href, { method: "GET" });
+  });
+});
