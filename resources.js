@@ -265,7 +265,9 @@ function renderUniversitiesOnMap(universities, selectedUni = "all") {
 
   let unisToShow = universities;
   if (selectedUni !== "all") {
-    unisToShow = universities.filter(u => u.Name === selectedUni);
+    unisToShow = universities.filter(
+      u => u.Name && u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
+    );
   }
 
   const uniIcon = {
@@ -277,6 +279,9 @@ function renderUniversitiesOnMap(universities, selectedUni = "all") {
     scale: 1.6,
     anchor: new google.maps.Point(12, 24)
   };
+
+  let singleMarker = null;
+  let singleInfo = null;
 
   unisToShow.forEach(u => {
     if (!u.Latitude || !u.Longitude) return;
@@ -293,13 +298,35 @@ function renderUniversitiesOnMap(universities, selectedUni = "all") {
       content: `
         <div class="info-card">
           <h2>${u.Name}</h2>
-          <p>${u.Address}</p>
-          <p>${u.City}</p>
+          <p>${u.Address || ""}</p>
+          <p>${u.City || ""}</p>
         </div>`
     });
-    marker.addListener("click", () => info.open(map, marker));
+
+    marker.addListener("click", () => {
+      info.open(map, marker);
+      map.panTo(marker.getPosition());
+    });
+
+    if (unisToShow.length === 1) {
+      singleMarker = marker;
+      singleInfo = info;
+    }
+
     universityMarkers.push(marker);
   });
+
+  if (unisToShow.length === 1 && unisToShow[0].Latitude && unisToShow[0].Longitude) {
+    const target = unisToShow[0];
+    map.setCenter({ lat: target.Latitude, lng: target.Longitude });
+    map.setZoom(12);
+
+    if (singleMarker && singleInfo) {
+      singleInfo.open(map, singleMarker);
+      singleMarker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(() => singleMarker.setAnimation(null), 1500);
+    }
+  }
 }
 
 
