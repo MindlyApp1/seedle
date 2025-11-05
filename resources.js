@@ -480,7 +480,7 @@ async function initMap() {
             filtered = filtered.filter(r =>
               r.Latitude &&
               r.Longitude &&
-              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
             );
             renderUniversitiesOnMap([uni], uni.Name);
             map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
@@ -628,7 +628,7 @@ async function initMap() {
       if (uni && uni.Latitude && uni.Longitude) {
         filteredResources = filteredResources.filter(r =>
           r.Latitude && r.Longitude &&
-          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
         );
       }
     }
@@ -666,7 +666,7 @@ async function initMap() {
             filtered = filtered.filter(r =>
               r.Latitude &&
               r.Longitude &&
-              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
             );
           }
         }
@@ -693,7 +693,7 @@ async function initMap() {
         filtered = filtered.filter(r =>
           r.Latitude &&
           r.Longitude &&
-          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 30
+          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
         );
       }
     }
