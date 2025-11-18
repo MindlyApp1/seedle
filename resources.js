@@ -4,7 +4,7 @@ const excelFilePath = "assets/canadianMentalHealthResources.xlsx";
 let resources = [];
 let map;
 let markers = [];
-let userPos = null;
+
 let firstOnlineRender = true;
 let universityMarkers = [];
 let universities = [];
@@ -43,7 +43,10 @@ async function loadExcel() {
       Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
       OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
       Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
-      Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null
+      Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
+      Rating: row.Rating !== undefined ? String(row.Rating).trim() : "",
+      OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
+      UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : "",
     };
   });
 }
@@ -126,12 +129,19 @@ function renderResourcesOnMap(filtered) {
         }
       });
 
-      marker.addListener("click", () => {
-        const distanceText =
-          userPos && r.Latitude && r.Longitude
-            ? `<p class="info-distance">${getDistanceKm(userPos.lat, userPos.lng, r.Latitude, r.Longitude)} km away</p>`
-            : `<p class="info-distance">Distance unavailable</p>`;
+      let distanceText = "";
 
+      if (currentType === "inperson" && currentUni) {
+        const uni = universities.find(u => u.Name === currentUni);
+        if (uni && uni.Latitude && uni.Longitude) {
+          const dist = getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude);
+          distanceText = `<p class="info-distance">${dist} km from campus</p>`;
+        } else {
+          distanceText = `<p class="info-distance">Distance from campus unavailable</p>`;
+        }
+      }
+
+      marker.addListener("click", () => {
         infoWindow.setContent(`
           <div class="info-card">
             <h2 class="info-title">${r.Name}</h2>
@@ -140,6 +150,11 @@ function renderResourcesOnMap(filtered) {
             <p class="info-address">${r.Address || ""}</p>
             ${distanceText}
             <p class="info-contact">${r.Contact || ""}</p>
+
+            <p><strong>Rating:</strong> ${r.Rating || "Not provided"}</p>
+            <p><strong>OHIP Coverage:</strong> ${r.OHIP || "Not provided"}</p>
+            <p><strong>UHIP Coverage:</strong> ${r.UHIP || "Not provided"}</p>
+
             <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
           </div>
         `);
@@ -364,6 +379,7 @@ async function initMap() {
 
   resources = await loadExcel();
   universities = await loadUniversities();
+  
   renderUniversitiesOnMap(universities);
 
   const allCategories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
@@ -534,79 +550,6 @@ async function initMap() {
       backBtn.style.display = "none";
     });
   }
-
-
-  const locationButton = document.createElement("button");
-  locationButton.className = "custom-location-btn";
-  locationButton.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i>`;
-  locationButton.style.background = "#fff";
-  locationButton.style.border = "2px solid #ccc";
-  locationButton.style.borderRadius = "50%";
-  locationButton.style.width = "40px";
-  locationButton.style.height = "40px";
-  locationButton.style.display = "flex";
-  locationButton.style.alignItems = "center";
-  locationButton.style.justifyContent = "center";
-  locationButton.style.cursor = "pointer";
-  locationButton.style.margin = "10px";
-  locationButton.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
-  locationButton.title = "Zoom to your location";
-
-  let userMarker = null;
-
-  locationButton.addEventListener("click", () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported");
-      return;
-    }
-
-    if (input.value.trim().length > 0) {
-      input.value = "";
-      icon.classList.add("disabled");
-      icon.classList.remove("active", "toggled");
-      icon.style.display = "block";
-      clearBtn.style.display = "none";
-
-      const filtered = getActiveFilteredResources();
-      renderResourcesOnMap(filtered);
-    }
-
-    runGeolocation(false);
-  });
-
-
-  function runGeolocation(skipMarker) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if (!skipMarker) {
-          if (userMarker) {
-            userMarker.setPosition(userPos);
-          } else {
-            userMarker = new google.maps.Marker({
-              position: userPos,
-              map,
-              title: "You are here",
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 8,
-                fillColor: "#4285F4",
-                fillOpacity: 1,
-                strokeColor: "#fff",
-                strokeWeight: 2
-              }
-            });
-          }
-        }
-        map.setCenter(userPos);
-        map.setZoom(14);
-      },
-      () => {},
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  }
-
-  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
 
   const form = document.getElementById("search-form");
   const input = document.getElementById("map-search");
