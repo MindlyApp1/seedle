@@ -384,12 +384,6 @@
   margin-left: 0px;
 }
 
-.custom-location-btn:hover {
-  color: #4cbb6a;
-  border-color: #2d7a46;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-}
-
 #questionnaire {
   background: #ffffff;
   border-radius: 16px;
