@@ -202,27 +202,25 @@
   position: relative;
 }
 
-.liaison-side .team-subtitle {
-  text-align: center;
-}
-
 .advisors-grid {
   display: flex;
-  justify-content: space-between;
-  gap: 0rem;
-  flex-wrap: nowrap;
-  margin-top: 0rem;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 15rem;
 }
 
 .advisor-member {
-  flex: 1;
-  text-align: center;
+  flex: 0 0 auto;
+  width: auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 
 .advisor-member img {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
   border-radius: 24px;
   border: 2px solid #feeacf;
@@ -249,6 +247,7 @@
 .coordinator-side {
   flex: 1;
   min-width: 300px;
+  z-index: 1;
 }
 
 .coordinator-subtitle {
@@ -269,6 +268,7 @@
 .coordinator-member {
   text-align: center;
   flex: 1;
+  z-index: 1;
 }
 
 .coordinator-member img {
@@ -289,38 +289,19 @@
   margin: 0;
 }
 
-.directors-liaison-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-}
 
 .directors-side {
   flex: 3;
 }
 
-.liaison-side {
-  flex: 1;
-  margin-left: auto;
-  text-align: center;
-}
 
-.directors-grid, 
-.liaison-grid {
+.directors-grid {
   display: flex;
   justify-content: center;
   gap: 0rem;
   flex-wrap: wrap;
   margin-top: 0rem;
 }
-
-.liaison-grid {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16rem;
-}
-
 
 .profile-card {
   text-align: center;
@@ -334,7 +315,7 @@
 .profile-card img {
   width: 160px;
   height: 160px;
-  border-radius: 50%;
+  border-radius: 24px;
   object-fit: cover;
   border: 2px solid #feeacf;
   box-shadow: 0 0 20px #feecd2;
@@ -397,6 +378,7 @@
   right: 0;
   width: 400px;
   height: auto;
+  z-index: 0;
 }
 
 
