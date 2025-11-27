@@ -356,7 +356,7 @@ async function initMap() {
     center: { lat: 56.1304, lng: -106.3468 },
     zoom: 4,
     minZoom: 3,
-    maxZoom: 12,
+    maxZoom: 18,
     restriction: {
       latLngBounds: { north: 83.11, south: 41.60, west: -141.2, east: -52.60 },
       strictBounds: true
