@@ -44,7 +44,6 @@ async function loadExcel() {
       OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
       Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
       Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
-      Rating: row.Rating !== undefined ? String(row.Rating).trim() : "",
       OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
       UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : "",
     };
@@ -151,7 +150,6 @@ function renderResourcesOnMap(filtered) {
             ${distanceText}
             <p class="info-contact">${r.Contact || ""}</p>
 
-            <p><strong>Rating:</strong> ${r.Rating || "Not provided"}</p>
             <p><strong>OHIP Coverage:</strong> ${r.OHIP || "Not provided"}</p>
             <p><strong>UHIP Coverage:</strong> ${r.UHIP || "Not provided"}</p>
 
