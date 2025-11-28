@@ -10,6 +10,7 @@ let universityMarkers = [];
 let universities = [];
 let currentUni = null;
 let currentType = null;
+let circularPanListener = null;
 
 const categoryColorMap = {};
 let colorIndex = 0;
@@ -84,7 +85,6 @@ function getDynamicCityRadiusKm(uni, resources) {
 
   const cityName = uni.City.toLowerCase().trim();
 
-  // Get all in-person resources in the same city
   const cityResources = resources.filter(r =>
     r.City &&
     r.City.toLowerCase().trim() === cityName &&
@@ -95,7 +95,6 @@ function getDynamicCityRadiusKm(uni, resources) {
 
   if (cityResources.length === 0) return 8;
 
-  // Compute distances from university to each resource
   const distances = cityResources.map(r =>
     parseFloat(
       getDistanceKm(
@@ -109,14 +108,11 @@ function getDynamicCityRadiusKm(uni, resources) {
 
   distances.sort((a, b) => a - b);
 
-  // Use the 80th percentile — very accurate city radius
   const index = Math.floor(distances.length * 0.80);
   const radius = distances[index] || distances[distances.length - 1];
 
-  // Clamp for realistic city sizes
   return Math.min(Math.max(radius, 4), 20);
 }
-
 
 function getCategoryColor(category) {
   const normalized = (category || "").toLowerCase().trim();
@@ -406,10 +402,6 @@ async function initMap() {
     zoom: 4,
     minZoom: 3,
     maxZoom: 18,
-    restriction: {
-      latLngBounds: { north: 83.11, south: 41.60, west: -141.2, east: -52.60 },
-      strictBounds: true
-    },
     gestureHandling: "greedy",
     mapTypeControl: false,
     streetViewControl: false,
@@ -423,6 +415,26 @@ async function initMap() {
       { featureType: "landscape", elementType: "labels", stylers: [{ visibility: "off" }] }
     ]
   });
+
+  function applyCircularPanRestriction(centerLat, centerLng, radiusMeters = 25000) {
+    const center = new google.maps.LatLng(centerLat, centerLng);
+    let lastValidCenter = center;
+
+    if (circularPanListener) {
+      google.maps.event.removeListener(circularPanListener);
+    }
+
+    circularPanListener = map.addListener("drag", () => {
+      const current = map.getCenter();
+      const distance = google.maps.geometry.spherical.computeDistanceBetween(center, current);
+
+      if (distance <= radiusMeters) {
+        lastValidCenter = current;
+      } else {
+        map.setCenter(lastValidCenter);
+      }
+    });
+  }
 
   resources = await loadExcel();
   universities = await loadUniversities();
@@ -548,6 +560,7 @@ async function initMap() {
             renderUniversitiesOnMap([uni], uni.Name);
             map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
             map.setZoom(13);
+            applyCircularPanRestriction(uni.Latitude, uni.Longitude, 25000);
           }
         }
 
