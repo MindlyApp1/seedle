@@ -79,6 +79,45 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return (R * c).toFixed(1);
 }
 
+function getDynamicCityRadiusKm(uni, resources) {
+  if (!uni || !uni.City) return 10;
+
+  const cityName = uni.City.toLowerCase().trim();
+
+  // Get all in-person resources in the same city
+  const cityResources = resources.filter(r =>
+    r.City &&
+    r.City.toLowerCase().trim() === cityName &&
+    r.OnlineOnly.toLowerCase() !== "yes" &&
+    r.Latitude &&
+    r.Longitude
+  );
+
+  if (cityResources.length === 0) return 8;
+
+  // Compute distances from university to each resource
+  const distances = cityResources.map(r =>
+    parseFloat(
+      getDistanceKm(
+        uni.Latitude,
+        uni.Longitude,
+        r.Latitude,
+        r.Longitude
+      )
+    )
+  );
+
+  distances.sort((a, b) => a - b);
+
+  // Use the 80th percentile — very accurate city radius
+  const index = Math.floor(distances.length * 0.80);
+  const radius = distances[index] || distances[distances.length - 1];
+
+  // Clamp for realistic city sizes
+  return Math.min(Math.max(radius, 4), 20);
+}
+
+
 function getCategoryColor(category) {
   const normalized = (category || "").toLowerCase().trim();
   if (!normalized) return "#808080";
@@ -515,6 +554,7 @@ async function initMap() {
         document.getElementById("online-resources-section").style.display = "none";
         document.getElementById("map-description").style.display = "block";
         document.getElementById("map-container").style.display = "block";
+        document.getElementById("resource-disclaimer").style.display = "block";
         document.getElementById("search-form").style.display = "flex";
         document.getElementById("province-name").style.display = "block";
 
@@ -549,6 +589,7 @@ async function initMap() {
 
       document.getElementById("resourcesList").style.display = "none";
       document.getElementById("map-container").style.display = "none";
+      document.getElementById("resource-disclaimer").style.display = "none";
       document.getElementById("province-name").style.display = "none";
       document.getElementById("map-description").style.display = "none";
       document.getElementById("search-form").style.display = "none";
