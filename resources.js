@@ -148,10 +148,14 @@ function renderResourcesOnMap(filtered) {
             <p class="info-description">${r.Description}</p>
             <p class="info-address">${r.Address || ""}</p>
             ${distanceText}
-            <p class="info-contact">${r.Contact || ""}</p>
+
+            ${r["Phone Number"] ? `<p class="info-contact">Phone: ${r["Phone Number"]}</p>` : ""}
+            ${r.Email ? `<p class="info-contact">Email: ${r.Email}</p>` : ""}
+            ${r.Hours ? `<p class="info-contact">Hours: ${r.Hours}</p>` : ""}
 
             <p><strong>OHIP Coverage:</strong> ${r.OHIP || "Not provided"}</p>
             <p><strong>UHIP Coverage:</strong> ${r.UHIP || "Not provided"}</p>
+
 
             <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
           </div>
@@ -219,9 +223,15 @@ function renderResourcesOnMap(filtered) {
             <h2>${r.Name}</h2>
             <p><strong>${r.OriginalCategory || r.Category}</strong></p>
             <p>${r.Description}</p>
-            <p>${r.Contact || ""}</p>
+            <p>${r.Address || ""}</p>
+
+            ${r["Phone Number"] ? `<p>Phone: ${r["Phone Number"]}</p>` : ""}
+            ${r.Email ? `<p>Email: ${r.Email}</p>` : ""}
+            ${r.Hours ? `<p>Hours: ${r.Hours}</p>` : ""}
+
             <a href="${r.Link}" target="_blank">Visit Website</a>
           `;
+
           onlineContainer.appendChild(card);
 
           if (firstOnlineRender) {
@@ -668,7 +678,9 @@ async function initMap() {
         ${String(r.Province || "")}
         ${String(r.Category || "")}
         ${String(r.Address || "")}
-        ${String(r.Contact || "")}
+        ${String(r["Phone Number"] || "")}
+        ${String(r.Email || "")}
+        ${String(r.Hours || "")}
         ${String(r.Description || "")}
       `.toLowerCase();
       return queryWords.every(word => combined.includes(word));
