@@ -12,15 +12,6 @@ let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
 
-const categoryColorMap = {};
-let colorIndex = 0;
-
-const distinctColors = [
-  "#FF1744", "#00E676", "#FFEA00", "#2979FF", "#FF9100", "#D500F9",
-  "#00E5FF", "#FF4081", "#76FF03", "#FF6D00", "#0091EA", "#C51162",
-  "#64DD17", "#FFD600", "#AA00FF", "#FF3D00", "#00B8D4", "#AEEA00",
-  "#6200EA", "#FFAB00"
-];
 
 async function loadExcel() {
   const response = await fetch(excelFilePath);
@@ -80,6 +71,21 @@ async function loadUniversities() {
   }));
 }
 
+const fixedCategoryColors = {
+  "counselling": "#1E64C8",
+  "crisis & distress": "#B32525",
+  "sexual health": "#5C2D91",
+  "indigenous services": "#2F6B3F",
+  "bipoc services": "#F4D88A",
+  "lgbtq2sia+ services": "#3C3C3C",
+  "accessibility & disability": "#D9D9D9"
+};
+
+function getCategoryColor(category) {
+  const c = (category || "").toLowerCase().trim();
+  return fixedCategoryColors[c] || "#808080";
+}
+
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -124,18 +130,6 @@ function getDynamicCityRadiusKm(uni, resources) {
   const radius = distances[index] || distances[distances.length - 1];
 
   return Math.min(Math.max(radius, 4), 20);
-}
-
-function getCategoryColor(category) {
-  const normalized = (category || "").toLowerCase().trim();
-  if (!normalized) return "#808080";
-
-  if (categoryColorMap[normalized]) return categoryColorMap[normalized];
-
-  const color = distinctColors[colorIndex % distinctColors.length];
-  categoryColorMap[normalized] = color;
-  colorIndex++;
-  return color;
 }
 
 function renderResourcesOnMap(filtered) {
