@@ -25,30 +25,42 @@ const distinctColors = [
 async function loadExcel() {
   const response = await fetch(excelFilePath);
   if (!response.ok) return [];
+
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
-  const sheetName = workbook.SheetNames[0];
-  const sheet = workbook.Sheets[sheetName];
-  const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-  return json.map(r => {
-    const row = {};
-    for (const key in r) {
-      row[key.trim()] = r[key];
-    }
-    return {
-      ...row,
-      OriginalCategory: row.Category ? String(row.Category).trim() : "",
-      Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
-      Name: row.Name ? String(row.Name).toLowerCase().trim().replace(/\s+/g, " ") : "",
-      City: row.City ? String(row.City).toLowerCase().trim().replace(/\s+/g, " ") : "",
-      Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
-      OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
-      Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
-      Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
-      OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
-      UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : "",
-    };
+
+  let allRows = [];
+
+  workbook.SheetNames.forEach(sheetName => {
+    const sheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+    const cleaned = json.map(r => {
+      const row = {};
+
+      for (const key in r) {
+        row[key.trim()] = r[key];
+      }
+
+      return {
+        ...row,
+        OriginalCategory: row.Category ? String(row.Category).trim() : "",
+        Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
+        Name: row.Name ? String(row.Name).toLowerCase().trim().replace(/\s+/g, " ") : "",
+        City: row.City ? String(row.City).toLowerCase().trim().replace(/\s+/g, " ") : "",
+        Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
+        OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
+        Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
+        Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
+        OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
+        UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : "",
+      };
+    });
+
+    allRows = allRows.concat(cleaned);
   });
+
+  return allRows;
 }
 
 async function loadUniversities() {
