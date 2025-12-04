@@ -13,6 +13,15 @@ let currentType = null;
 let circularPanListener = null;
 
 
+function toTitleCase(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+}
+
 async function loadExcel() {
   const response = await fetch(excelFilePath);
   if (!response.ok) return [];
@@ -35,19 +44,22 @@ async function loadExcel() {
 
       return {
         ...row,
-        OriginalCategory: row.Category ? String(row.Category).trim() : "",
-        Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
+
+        DisplayName: toTitleCase(row.Name),
+        DisplayCategory: toTitleCase(row.Category),
+        DisplayCity: toTitleCase(row.City),
+        DisplayProvince: toTitleCase(row.Province),
         Name: row.Name ? String(row.Name).toLowerCase().trim().replace(/\s+/g, " ") : "",
+        Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
         City: row.City ? String(row.City).toLowerCase().trim().replace(/\s+/g, " ") : "",
         Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
         OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
         Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
         Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
         OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
-        UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : "",
+        UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : ""
       };
     });
-
     allRows = allRows.concat(cleaned);
   });
 
@@ -184,8 +196,8 @@ function renderResourcesOnMap(filtered) {
       marker.addListener("click", () => {
         infoWindow.setContent(`
           <div class="info-card">
-            <h2 class="info-title">${r.Name}</h2>
-            <p class="info-category"><strong>${r.Category}</strong></p>
+            <h2 class="info-title">${r.DisplayName}</h2>
+            <p class="info-category"><strong>${r.DisplayCategory}</strong></p>
             <p class="info-description">${r.Description}</p>
             <p class="info-address">${r.Address || ""}</p>
             ${distanceText}
@@ -239,7 +251,7 @@ function renderResourcesOnMap(filtered) {
       categories.forEach(cat => {
         const option = document.createElement("option");
         option.value = cat;
-        const pretty = onlineList.find(r => r.Category === cat)?.OriginalCategory || cat;
+        const pretty = onlineList.find(r => r.Category === cat)?.DisplayCategory || cat;
         option.textContent = pretty;
         categoryFilter.appendChild(option);
       });
@@ -261,8 +273,8 @@ function renderResourcesOnMap(filtered) {
           if (firstOnlineRender) card.classList.add("initial-load");
 
           card.innerHTML = `
-            <h2>${r.Name}</h2>
-            <p><strong>${r.OriginalCategory || r.Category}</strong></p>
+            <h2>${r.DisplayName}</h2>
+            <p><strong>${r.DisplayCategory}</strong></p>
             <p>${r.Description}</p>
             <p>${r.Address || ""}</p>
 
@@ -456,7 +468,7 @@ async function initMap() {
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat;
-      option.textContent = resources.find(r => r.Category === cat)?.OriginalCategory || cat;
+      option.textContent = resources.find(r => r.Category === cat)?.DisplayCategory || cat;
       categorySelect.appendChild(option);
     });
   }
@@ -468,7 +480,6 @@ async function initMap() {
     backBtn.style.display = "none";
     backBtn.classList.add("styled-back-btn");
   }
-
 
   if (questionnaireForm) {
     const typeSelect = document.getElementById("resource-type");
@@ -649,8 +660,7 @@ async function initMap() {
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat;
-      option.textContent =
-        filteredResources.find(r => r.Category === cat)?.OriginalCategory || cat;
+      option.textContent = filteredResources.find(r => r.Category === cat)?.DisplayCategory || cat;
       mapCategorySelect.appendChild(option);
     });
   }
