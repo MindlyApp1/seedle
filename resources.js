@@ -12,6 +12,23 @@ let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
 
+const provincialPlans = {
+  "ontario": "OHIP",
+  "british columbia": "MSP",
+  "alberta": "AHCIP",
+  "quebec": "RAMQ",
+  "manitoba": "Manitoba Health",
+  "saskatchewan": "eHealth Saskatchewan",
+  "nova scotia": "MSI",
+  "new brunswick": "Medicare",
+  "newfoundland and labrador": "MCP",
+  "prince edward island": "Health PEI"
+};
+
+function getProvincialPlanName(province) {
+  if (!province) return "Provincial Insurance";
+  return provincialPlans[province.toLowerCase().trim()] || "Provincial Insurance";
+}
 
 function toTitleCase(str) {
   if (!str) return "";
@@ -56,7 +73,7 @@ async function loadExcel() {
         OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
         Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
         Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
-        OHIP: row.OHIP !== undefined ? String(row.OHIP).trim() : "",
+        ProvincialCoverage: row.ProvincialCoverage !== undefined ? String(row.ProvincialCoverage).trim() : "",
         UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : ""
       };
     });
@@ -206,9 +223,8 @@ function renderResourcesOnMap(filtered) {
             ${r.Email ? `<p class="info-contact">Email: ${r.Email}</p>` : ""}
             ${r.Hours ? `<p class="info-contact">Hours: ${r.Hours}</p>` : ""}
 
-            <p><strong>OHIP Coverage:</strong> ${r.OHIP || "Not provided"}</p>
-            <p><strong>UHIP Coverage:</strong> ${r.UHIP || "Not provided"}</p>
-
+            <p><strong>${getProvincialPlanName(r.Province)} Coverage:</strong> ${r.ProvincialCoverage || "Not provided"}</p>
+            ${r.UHIP ? `<p><strong>UHIP Coverage:</strong> ${r.UHIP}</p>` : ""}
 
             <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
           </div>
