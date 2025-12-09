@@ -56,8 +56,7 @@ async function loadExcel() {
       const row = {};
 
       for (const key in r) {
-        const cleanKey = key.trim().toLowerCase();
-        row[cleanKey] = r[key];
+        row[key.trim()] = r[key];
       }
 
       return {
@@ -74,8 +73,8 @@ async function loadExcel() {
         OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
         Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
         Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
-        ProvincialCoverage: row.provincialcoverage !== undefined ? String(row.provincialcoverage).trim() : "",
-        UHIP: row.uhip !== undefined ? String(row.uhip).trim() : ""
+        ProvincialCoverage: row.ProvincialCoverage !== undefined ? String(row.ProvincialCoverage).trim() : "",
+        UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : ""
       };
     });
     allRows = allRows.concat(cleaned);
