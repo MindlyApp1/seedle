@@ -224,7 +224,7 @@ function renderResourcesOnMap(filtered) {
             ${r.Hours ? `<p class="info-contact">Hours: ${r.Hours}</p>` : ""}
 
             <p><strong>${getProvincialPlanName(r.Province)} Coverage:</strong> ${r.ProvincialCoverage || "Not provided"}</p>
-            ${r.UHIP ? `<p><strong>UHIP Coverage:</strong> ${r.UHIP}</p>` : ""}
+            <p><strong>UHIP Coverage:</strong> ${r.UHIP && r.UHIP.trim() !== "" ? r.UHIP : "TBD"}</p>
 
             <a class="info-link" href="${r.Link}" target="_blank">Visit Website</a>
           </div>
