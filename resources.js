@@ -1,4 +1,5 @@
-const excelFilePath = "/assets/seedleResources.xlsx";
+
+const excelFilePath = "assets/seedleResources.xlsx";
 
 let resources = [];
 let map;
