@@ -290,11 +290,9 @@
   margin: 0;
 }
 
-
 .directors-side {
   flex: 3;
 }
-
 
 .directors-grid {
   display: flex;
