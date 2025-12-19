@@ -101,13 +101,19 @@ async function loadUniversities() {
 }
 
 const fixedCategoryColors = {
-  "counselling": "#0953a9",
-  "crisis & distress": "#b10202",
-  "sexual health": "#5b3287",
-  "indigenous services": "#13734b",
-  "bipoc services": "#ffe5a1",
+  "substance use": "#215a6c",
+  "sexual violence": "#753800",
   "lgbtq2sia+ services": "#3d3d3d",
-  "accessibility & disability": "#e6e6e6"
+  "indigenous services": "#14724b",
+  "sexual health": "#5b3286",
+  "academic": "#e5cff3",
+  "accessibility & disability": "#e5e5e5",
+  "cross-cultural": "#ffe4a0",
+  "counselling": "#0a52a8",
+  "crisis & distress": "#b00302",
+  "food insecurity": "#ffc7aa",
+  "physical activity": "#bee0f6",
+  "faith & spiritual": "#c5dce0"
 };
 
 function getCategoryColor(category) {
