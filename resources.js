@@ -285,7 +285,7 @@ function renderResourcesOnMap(filtered) {
       const query = searchQuery.trim().toLowerCase();
 
       onlineList.forEach(r => {
-        const cardText = `${r.Name} ${r.Description} ${r.Contact}`.toLowerCase();
+        const cardText = `${r.Name}${r.Description}${r["Phone Number"]}${r.Email}${r.Hours}`.toLowerCase();
         const matchCat = selected === "all" || r.Category === selected;
         const matchText = !query || cardText.includes(query);
 
