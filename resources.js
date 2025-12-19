@@ -70,7 +70,7 @@ async function loadExcel() {
         Category: row.Category ? String(row.Category).toLowerCase().trim().replace(/\s+/g, " ") : "",
         City: row.City ? String(row.City).toLowerCase().trim().replace(/\s+/g, " ") : "",
         Province: row.Province ? String(row.Province).toLowerCase().trim().replace(/\s+/g, " ") : "",
-        OnlineOnly: row.OnlineOnly ? String(row.OnlineOnly).trim() : "",
+        OnlineOnly: row.onlineOnly ? String(row.onlineOnly).trim().toLowerCase() : "",
         Latitude: row.Latitude && !isNaN(parseFloat(row.Latitude)) ? parseFloat(row.Latitude) : null,
         Longitude: row.Longitude && !isNaN(parseFloat(row.Longitude)) ? parseFloat(row.Longitude) : null,
         ProvincialCoverage: row.ProvincialCoverage !== undefined ? String(row.ProvincialCoverage).trim() : "",
@@ -285,7 +285,7 @@ function renderResourcesOnMap(filtered) {
       const query = searchQuery.trim().toLowerCase();
 
       onlineList.forEach(r => {
-        const cardText = `${r.Name}${r.Description}${r["Phone Number"]}${r.Email}${r.Hours}`.toLowerCase();
+        const cardText = ` ${r.Name} ${r.Description} ${r["Phone Number"]} ${r.Email} ${r.Hours}`.toLowerCase();
         const matchCat = selected === "all" || r.Category === selected;
         const matchText = !query || cardText.includes(query);
 
