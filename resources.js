@@ -298,8 +298,6 @@ function renderResourcesOnMap(filtered) {
             <h2>${r.DisplayName}</h2>
             <p><strong>${r.DisplayCategory}</strong></p>
             <p>${r.Description}</p>
-            <p>${r.Address || ""}</p>
-
             ${r["Phone Number"] ? `<p>Phone: ${r["Phone Number"]}</p>` : ""}
             ${r.Email ? `<p>Email: ${r.Email}</p>` : ""}
             ${r.Hours ? `<p>Hours: ${r.Hours}</p>` : ""}
