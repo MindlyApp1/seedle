@@ -546,7 +546,7 @@ async function initMap() {
     accessParam === "online" ||
     (accessParam === "inperson" && universityParam)
   ) {
-    questionnaireForm.requestSubmit();
+    document.querySelector('#questionnaire-form button[type="submit"]')?.click();
   }
 
     uniSelect.addEventListener("change", () => {
