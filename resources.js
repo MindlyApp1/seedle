@@ -519,6 +519,23 @@ async function initMap() {
       uniSelect.required = isInPerson;
     });
 
+    const params = new URLSearchParams(window.location.search);
+    const accessParam = params.get("access");
+    const universityParam = params.get("university");
+
+    if (accessParam) {
+      typeSelect.value = accessParam;
+      typeSelect.dispatchEvent(new Event("change"));
+    }
+
+    if (universityParam && accessParam === "inperson") {
+      uniSelect.value = universityParam;
+    }
+
+    if (accessParam && (accessParam === "online" || (accessParam === "inperson" && universityParam))) {
+      questionnaireForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    }
+
     uniSelect.addEventListener("change", () => {
       if (typeSelect.value === "inperson") {
         updateCategoryDropdown(uniSelect.value);
