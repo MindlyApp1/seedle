@@ -529,24 +529,27 @@ async function initMap() {
     if (!isInPerson) setQueryParam("university", "");
   });
 
+  const params = new URLSearchParams(window.location.search);
+  const accessParam = params.get("access");
+  const universityParam = params.get("university");
 
-    const params = new URLSearchParams(window.location.search);
-    const accessParam = params.get("access");
-    const universityParam = params.get("university");
+  if (accessParam) {
+    typeSelect.value = accessParam;
+    typeSelect.dispatchEvent(new Event("change"));
+  }
 
-    if (accessParam) {
-      typeSelect.value = accessParam;
-      typeSelect.dispatchEvent(new Event("change"));
-    }
+  if (accessParam === "inperson" && universityParam) {
+    uniSelect.value = universityParam;
+  }
 
-    if (universityParam && accessParam === "inperson") {
-      uniSelect.value = universityParam;
-    }
-
-    if (accessParam && (accessParam === "online" || (accessParam === "inperson" && universityParam))) {
-      questionnaireForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-    }
-
+  if (
+    accessParam === "online" ||
+    (accessParam === "inperson" && universityParam)
+  ) {
+    questionnaireForm.dispatchEvent(
+      new Event("submit", { cancelable: true, bubbles: true })
+    );
+  }
     uniSelect.addEventListener("change", () => {
       if (typeSelect.value === "inperson") {
         setQueryParam("university", uniSelect.value);
