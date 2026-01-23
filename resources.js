@@ -19,6 +19,33 @@ function setQueryParam(key, value) {
   window.history.replaceState({}, "", url.toString());
 }
 
+function normalizeParam(s) {
+  return decodeURIComponent(String(s || ""))
+    .trim()
+    .replace(/\+/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function findOptionValue(selectEl, desired) {
+  if (!selectEl || !desired) return "";
+  const target = normalizeParam(desired).toLowerCase();
+  const opts = Array.from(selectEl.options || []);
+
+  const exact = opts.find(o => (o.value || "").toLowerCase() === target);
+  if (exact) return exact.value;
+
+  const byText = opts.find(o => (o.textContent || "").toLowerCase().trim() === target);
+  if (byText) return byText.value;
+
+  const looseTarget = target.replace(/['’]/g, "");
+  const loose = opts.find(o =>
+    ((o.value || "").toLowerCase().replace(/['’]/g, "") === looseTarget) ||
+    ((o.textContent || "").toLowerCase().trim().replace(/['’]/g, "") === looseTarget)
+  );
+
+  return loose ? loose.value : "";
+}
+
 const provincialPlans = {
   "ontario": "OHIP",
   "british columbia": "MSP",
@@ -529,32 +556,34 @@ async function initMap() {
     if (!isInPerson) setQueryParam("university", "");
   });
 
+  const params = new URLSearchParams(window.location.search);
+  const accessParam = normalizeParam(params.get("access")).toLowerCase();
+  const universityParam = normalizeParam(params.get("university"));
 
-    const params = new URLSearchParams(window.location.search);
-    const accessParam = params.get("access");
-    const universityParam = params.get("university");
+  if (accessParam === "online" || accessParam === "inperson") {
+    typeSelect.value = accessParam;
+    typeSelect.dispatchEvent(new Event("change"));
+  }
 
-    if (accessParam) {
-      typeSelect.value = accessParam;
-      typeSelect.dispatchEvent(new Event("change"));
+  if (accessParam === "inperson" && universityParam) {
+    const matchedValue = findOptionValue(uniSelect, universityParam);
+    if (matchedValue) {
+      uniSelect.value = matchedValue;
+      uniSelect.dispatchEvent(new Event("change"));
     }
+  }
 
-    if (universityParam && accessParam === "inperson") {
-      uniSelect.value = universityParam;
-    }
+  const shouldAutoSubmit =
+    accessParam === "online" ||
+    (accessParam === "inperson" && !!uniSelect.value);
 
-    if (accessParam && (accessParam === "online" || (accessParam === "inperson" && universityParam))) {
-      questionnaireForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-    }
-
-    uniSelect.addEventListener("change", () => {
-      if (typeSelect.value === "inperson") {
-        setQueryParam("university", uniSelect.value);
-
-        updateCategoryDropdown(uniSelect.value);
-      }
+  if (shouldAutoSubmit) {
+    requestAnimationFrame(() => {
+      questionnaireForm.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
     });
-
+  }
 
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
