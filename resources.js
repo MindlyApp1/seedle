@@ -546,9 +546,10 @@ async function initMap() {
     accessParam === "online" ||
     (accessParam === "inperson" && universityParam)
   ) {
-    document.querySelector('#questionnaire-form button[type="submit"]')?.click();
+    questionnaireForm.dispatchEvent(
+      new Event("submit", { cancelable: true, bubbles: true })
+    );
   }
-
     uniSelect.addEventListener("change", () => {
       if (typeSelect.value === "inperson") {
         setQueryParam("university", uniSelect.value);
@@ -560,7 +561,6 @@ async function initMap() {
 
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      e.stopPropagation(); // add this
       const type = typeSelect.value;
       const selectedUni = uniSelect.value;
 
