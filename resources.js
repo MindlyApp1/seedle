@@ -560,6 +560,7 @@ async function initMap() {
 
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
+      e.stopPropagation(); // add this
       const type = typeSelect.value;
       const selectedUni = uniSelect.value;
 
