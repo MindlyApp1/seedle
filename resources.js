@@ -148,7 +148,7 @@ function getDynamicCityRadiusKm(uni, resources) {
   const cityResources = resources.filter(r =>
     r.City &&
     r.City.toLowerCase().trim() === cityName &&
-    r.OnlineOnly.toLowerCase() !== "yes" &&
+    (r.OnlineOnly || "").toLowerCase() !== "yes" &&
     r.Latitude &&
     r.Longitude
   );
@@ -568,6 +568,9 @@ async function initMap() {
         currentType = "online";
         currentUni = null;
       }
+      setQueryParam("access", type);
+      if (type === "inperson") setQueryParam("university", selectedUni);
+      else setQueryParam("university", "");
 
       if (!type) {
         alert("Please choose Online or In-person to continue.");
@@ -693,7 +696,7 @@ async function initMap() {
     mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
 
     let filteredResources = resources.filter(
-      r => !r.OnlineOnly || (r.OnlineOnly || "").toLowerCase() !== "yes");
+      r => (r.OnlineOnly || "").toLowerCase() !== "yes");
 
     if (selectedUni !== "all") {
       const uni = universities.find(u => u.Name === selectedUni);
