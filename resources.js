@@ -12,6 +12,13 @@ let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
 
+function setQueryParam(key, value) {
+  const url = new URL(window.location.href);
+  if (!value) url.searchParams.delete(key);
+  else url.searchParams.set(key, value);
+  window.history.replaceState({}, "", url.toString());
+}
+
 const provincialPlans = {
   "ontario": "OHIP",
   "british columbia": "MSP",
@@ -514,10 +521,14 @@ async function initMap() {
     });
 
     typeSelect.addEventListener("change", () => {
-      const isInPerson = typeSelect.value === "inperson";
-      uniWrapper.style.display = isInPerson ? "block" : "none";
-      uniSelect.required = isInPerson;
-    });
+    const isInPerson = typeSelect.value === "inperson";
+    uniWrapper.style.display = isInPerson ? "block" : "none";
+    uniSelect.required = isInPerson;
+
+    setQueryParam("access", typeSelect.value);
+    if (!isInPerson) setQueryParam("university", "");
+  });
+
 
     const params = new URLSearchParams(window.location.search);
     const accessParam = params.get("access");
@@ -538,9 +549,12 @@ async function initMap() {
 
     uniSelect.addEventListener("change", () => {
       if (typeSelect.value === "inperson") {
+        setQueryParam("university", uniSelect.value);
+
         updateCategoryDropdown(uniSelect.value);
       }
     });
+
 
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -581,7 +595,7 @@ async function initMap() {
       let filtered = resources;
 
       if (type === "online") {
-        filtered = filtered.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
+        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
 
         mainHeading.textContent = "Online Resources";
         mapDescription.textContent = "Explore accessible mental health supports you can use anytime, anywhere.";
@@ -598,7 +612,7 @@ async function initMap() {
       }
 
       else if (type === "inperson") {
-        filtered = filtered.filter(r => r.OnlineOnly.toLowerCase() !== "yes");
+        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
 
         if (selectedUni) {
           const uni = universities.find(
@@ -679,8 +693,7 @@ async function initMap() {
     mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
 
     let filteredResources = resources.filter(
-      r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes"
-    );
+      r => !r.OnlineOnly || (r.OnlineOnly || "").toLowerCase() !== "yes");
 
     if (selectedUni !== "all") {
       const uni = universities.find(u => u.Name === selectedUni);
@@ -714,9 +727,9 @@ async function initMap() {
       let filtered = [...resources];
 
       if (type === "online") {
-        filtered = filtered.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
+        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
       } else if (type === "inperson") {
-        filtered = filtered.filter(r => !r.OnlineOnly || r.OnlineOnly.toLowerCase() !== "yes");
+        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
 
         if (selectedUni && selectedUni !== "all") {
           const uni = universities.find(u => u.Name === selectedUni);
@@ -744,7 +757,7 @@ async function initMap() {
     let filtered = [...resources];
 
     if (currentType === "online") {
-      filtered = filtered.filter(r => r.OnlineOnly && r.OnlineOnly.toLowerCase() === "yes");
+      filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
     } else if (currentType === "inperson" && currentUni) {
       const uni = universities.find(u => u.Name === currentUni);
       if (uni && uni.Latitude && uni.Longitude) {
