@@ -22,22 +22,26 @@
   <script src="resources.js" defer></script>
   <script src="app.js" defer></script>
   <script 
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqVu5tdVI0szE7K5VynB1U3NGWU2P8hMc&libraries=geometry&callback=initMap"
-  defer>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqVu5tdVI0szE7K5VynB1U3NGWU2P8hMc&libraries=geometry&callback=initMap"
+    defer>
   </script>
 </head>
+
 <body>
   <div id="header"></div>
 
   <main class="resources">
     <div class="resources-container">
+
       <h1 class="fade-in">Resources</h1>
+
       <p id="map-description" class="fade-up" style="display:none;">
         Explore trusted in-person resources across Canadian universities on the map below.
       </p>
 
       <div id="questionnaire" class="fade-in">
         <h2>Find the right resources for you</h2>
+
         <form id="questionnaire-form">
           <label>
             How would you like to access support?
@@ -61,33 +65,48 @@
         </form>
       </div>
 
-        <div id="map-container" class="fade-in delay-3" style="display:none;">
-          <div id="map"></div>
+      <div id="map-container" class="fade-in delay-3" style="display:none;">
+        <div id="map"></div>
 
-          <div class="map-top-bar">
-            <form id="search-form" class="search-wrapper">
-              <input 
-                type="text" 
-                id="map-search" 
-                placeholder="Search in-person resources..." 
-              />
-              <i class="fa fa-search search-icon"></i>
-              <span id="clear-search">&times;</span>
-            </form>
+        <div class="map-top-bar">
+
+          <form id="search-form" class="search-wrapper">
+            <input 
+              type="text" 
+              id="map-search" 
+              placeholder="Search in-person resources..." 
+            />
+            <i class="fa fa-search search-icon"></i>
+            <span id="clear-search">&times;</span>
+          </form>
+
+          <!-- NEW WRAPPER FOR RIGHT CONTROLS -->
+          <div class="map-controls">
+
+            <select id="distance-filter">
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="25" selected>25 km</option>
+              <option value="50">50 km</option>
+            </select>
 
             <select id="map-category">
               <option value="all">All Categories</option>
             </select>
-          </div>
-        </div>
 
-        <p id="resource-disclaimer" style="display:none;">
-          We’re actively updating the map with new information and services!
-        </p>
+          </div>
+
+        </div>
+      </div>
+
+      <p id="resource-disclaimer" style="display:none;">
+        We’re actively updating the map with new information and services!
+      </p>
 
       <h3 id="province-name" class="fade-in delay-4" style="display:none;"></h3>
 
       <div id="resourcesList" class="fade-in delay-5" style="display:none;">
+
         <div id="online-resources-section">
           <div class="section-header">
             <input 
@@ -98,16 +117,21 @@
             />
             <select id="online-category"></select>
           </div>
+
           <div class="resources-list"></div>
         </div>
 
         <div id="inperson-resources-section" class="resources-list"></div>
 
-        <button type="button" id="back-to-questionnaire" style="display:none;">Back</button>
+        <button type="button" id="back-to-questionnaire" style="display:none;">
+          Back
+        </button>
       </div>
+
     </div>
   </main>
 
   <div id="footer"></div>
+
 </body>
 </html>

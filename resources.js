@@ -11,6 +11,7 @@ let universities = [];
 let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
+let currentDistanceKm = 25;
 
 function setQueryParam(key, value) {
   const url = new URL(window.location.href);
@@ -147,12 +148,28 @@ const fixedCategoryColors = {
   "crisis & distress": "#b00302",
   "food insecurity": "#ffc7aa",
   "physical activity": "#bee0f6",
-  "faith & spiritual": "#c5dce0"
+  "faith & spiritual": "#c5dce0",
+  "Housing Shelter": "#ebe900",
+  "Medical Clinics": "#f623a6",
+  "Clothing / Household Items": "#473822"
 };
 
 function getCategoryColor(category) {
   const c = (category || "").toLowerCase().trim();
   return fixedCategoryColors[c] || "#808080";
+}
+
+function isWithinDistance(uni, resource) {
+  if (!uni || !resource.Latitude || !resource.Longitude) return false;
+
+  return (
+    getDistanceKm(
+      uni.Latitude,
+      uni.Longitude,
+      resource.Latitude,
+      resource.Longitude
+    ) <= currentDistanceKm
+  );
 }
 
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -653,14 +670,16 @@ async function initMap() {
 
           if (uni && uni.Latitude && uni.Longitude) {
             filtered = filtered.filter(r =>
-              r.Latitude &&
-              r.Longitude &&
-              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
-            );
+                isWithinDistance(uni, r)
+              );
             renderUniversitiesOnMap([uni], uni.Name);
             map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
             map.setZoom(13);
-            applyCircularPanRestriction(uni.Latitude, uni.Longitude, 25000);
+            applyCircularPanRestriction(
+              uni.Latitude,
+              uni.Longitude,
+              currentDistanceKm * 1000
+            );
           }
         }
 
@@ -718,6 +737,29 @@ async function initMap() {
   const icon = document.querySelector(".search-icon");
   const clearBtn = document.getElementById("clear-search");
   icon.classList.add("disabled");
+  const distanceSelect = document.getElementById("distance-filter");
+
+  if (distanceSelect) {
+    distanceSelect.addEventListener("change", () => {
+      currentDistanceKm = parseInt(distanceSelect.value);
+
+      const filtered = getActiveFilteredResources();
+      renderResourcesOnMap(filtered);
+
+      if (currentUni) {
+        updateCategoryDropdown(currentUni);
+
+        const uni = universities.find(u => u.Name === currentUni);
+        if (uni && uni.Latitude && uni.Longitude) {
+          applyCircularPanRestriction(
+            uni.Latitude,
+            uni.Longitude,
+            currentDistanceKm * 1000
+          );
+        }
+      }
+    });
+  }
 
   const mapCategorySelect = document.getElementById("map-category");
 
@@ -731,8 +773,7 @@ async function initMap() {
       const uni = universities.find(u => u.Name === selectedUni);
       if (uni && uni.Latitude && uni.Longitude) {
         filteredResources = filteredResources.filter(r =>
-          r.Latitude && r.Longitude &&
-          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
+          isWithinDistance(uni, r)
         );
       }
     }
@@ -767,9 +808,7 @@ async function initMap() {
           const uni = universities.find(u => u.Name === selectedUni);
           if (uni && uni.Latitude && uni.Longitude) {
             filtered = filtered.filter(r =>
-              r.Latitude &&
-              r.Longitude &&
-              getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
+              isWithinDistance(uni, r)
             );
           }
         }
@@ -794,9 +833,7 @@ async function initMap() {
       const uni = universities.find(u => u.Name === currentUni);
       if (uni && uni.Latitude && uni.Longitude) {
         filtered = filtered.filter(r =>
-          r.Latitude &&
-          r.Longitude &&
-          getDistanceKm(uni.Latitude, uni.Longitude, r.Latitude, r.Longitude) <= 25
+          isWithinDistance(uni, r)
         );
       }
     }
