@@ -149,9 +149,9 @@ const fixedCategoryColors = {
   "food insecurity": "#ffc7aa",
   "physical activity": "#bee0f6",
   "faith & spiritual": "#c5dce0",
-  "Housing Shelter": "#ebe900",
-  "Medical Clinics": "#f623a6",
-  "Clothing / Household Items": "#473822"
+  "housing shelter": "#ebe900",
+  "medical clinics": "#f623a6",
+  "clothing / household items": "#473822"
 };
 
 function getCategoryColor(category) {
