@@ -12,6 +12,7 @@ let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
 let currentDistanceKm = 25;
+let selectedUniversityObject = null;
 
 function setQueryParam(key, value) {
   const url = new URL(window.location.href);
@@ -395,18 +396,13 @@ function renderResourcesOnMap(filtered) {
         }
       }
     } else {
-      const uniSelect = document.getElementById("university-select");
-      const selectedUni = uniSelect ? uniSelect.value : null;
-
-      if (selectedUni) {
-        const uni = universities.find(u => u.Name === selectedUni);
-        if (uni && uni.Latitude && uni.Longitude) {
-          map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
-          map.setZoom(13);
-        }
-      }
-
-      else {
+      if (selectedUniversityObject && selectedUniversityObject.Latitude && selectedUniversityObject.Longitude) {
+        map.setCenter({
+          lat: selectedUniversityObject.Latitude,
+          lng: selectedUniversityObject.Longitude
+        });
+        map.setZoom(13);
+      } else {
         map.setCenter({ lat: 56.1304, lng: -106.3468 });
         map.setZoom(4);
       }
@@ -527,7 +523,50 @@ async function initMap() {
 
   resources = await loadExcel();
   universities = await loadUniversities();
-  
+
+  universities.forEach(u => {
+    const option = document.createElement("option");
+    option.value = u.Name;
+    option.textContent = u.Name;
+    document.getElementById("university-select").appendChild(option);
+  });
+
+  const tom = new TomSelect("#university-select", {
+    create: false,
+    sortField: { field: "text", direction: "asc" },
+    maxOptions: 500,
+    placeholder: "Select a university...",
+    allowEmptyOption: true,
+    openOnFocus: true,
+    persist: false
+  });
+
+  const typeSelect = document.getElementById("resource-type");
+  const universityLabel = document.getElementById("university-label");
+
+  tom.disable();
+  universityLabel.style.display = "none";
+
+  typeSelect.addEventListener("change", () => {
+    if (typeSelect.value === "inperson") {
+      tom.enable();
+      universityLabel.style.display = "block";
+    } else {
+      tom.clear();
+      tom.disable();
+      universityLabel.style.display = "none";
+    }
+  });
+
+  if (typeSelect.value === "inperson") {
+    tom.enable();
+    universityLabel.style.display = "block";
+  }
+  tom.on("focus", function() {
+    if (!this.getValue()) {
+      this.clear(true);
+    }
+  });
   renderUniversitiesOnMap(universities);
 
   const allCategories = [...new Set(resources.map(r => r.Category).filter(Boolean))];
@@ -553,70 +592,50 @@ async function initMap() {
   }
 
   if (questionnaireForm) {
-    const typeSelect = document.getElementById("resource-type");
-    const uniWrapper = document.getElementById("university-wrapper");
-    const uniSelect = document.getElementById("university-select");
-
-    universities.forEach(u => {
-      const option = document.createElement("option");
-      option.value = u.Name;
-      option.textContent = u.Name;
-      uniSelect.appendChild(option);
-    });
 
     typeSelect.addEventListener("change", () => {
-    const isInPerson = typeSelect.value === "inperson";
-    uniWrapper.style.display = isInPerson ? "block" : "none";
-    uniSelect.required = isInPerson;
-
-    setQueryParam("access", typeSelect.value);
-    if (!isInPerson) setQueryParam("university", "");
-  });
-
-  const params = new URLSearchParams(window.location.search);
-  const accessParam = normalizeParam(params.get("access")).toLowerCase();
-  const universityParam = normalizeParam(params.get("university"));
-
-  if (accessParam === "online" || accessParam === "inperson") {
-    typeSelect.value = accessParam;
-    typeSelect.dispatchEvent(new Event("change"));
-  }
-
-  if (accessParam === "inperson" && universityParam) {
-    const matchedValue = findOptionValue(uniSelect, universityParam);
-    if (matchedValue) {
-      uniSelect.value = matchedValue;
-      uniSelect.dispatchEvent(new Event("change"));
-    }
-  }
-
-  const shouldAutoSubmit =
-    accessParam === "online" ||
-    (accessParam === "inperson" && !!uniSelect.value);
-
-  if (shouldAutoSubmit) {
-    requestAnimationFrame(() => {
-      questionnaireForm.dispatchEvent(
-        new Event("submit", { cancelable: true, bubbles: true })
-      );
+      const isInPerson = typeSelect.value === "inperson";
+      setQueryParam("access", typeSelect.value);
+      if (!isInPerson) setQueryParam("university", "");
     });
-  }
+
+    const params = new URLSearchParams(window.location.search);
+    const accessParam = normalizeParam(params.get("access")).toLowerCase();
+    const universityParam = normalizeParam(params.get("university"));
+
+    if (accessParam === "online" || accessParam === "inperson") {
+      typeSelect.value = accessParam;
+      typeSelect.dispatchEvent(new Event("change"));
+    }
+
+    if (accessParam === "inperson" && universityParam) {
+      const matched = universities.find(
+        u => u.Name.toLowerCase().trim() === universityParam.toLowerCase().trim()
+      );
+
+      if (matched) {
+        selectedUniversityObject = matched;
+        tom.setValue(matched.Name);
+      }
+    }
+
+    const shouldAutoSubmit =
+      accessParam === "online" ||
+      (accessParam === "inperson" && !!universityParam);
+
+    if (shouldAutoSubmit) {
+      requestAnimationFrame(() => {
+        questionnaireForm.dispatchEvent(
+          new Event("submit", { cancelable: true, bubbles: true })
+        );
+      });
+    }
 
     questionnaireForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const type = typeSelect.value;
-      const selectedUni = uniSelect.value;
 
-      if (type === "inperson") {
-        currentType = "inperson";
-        currentUni = selectedUni;
-      } else if (type === "online") {
-        currentType = "online";
-        currentUni = null;
-      }
-      setQueryParam("access", type);
-      if (type === "inperson") setQueryParam("university", selectedUni);
-      else setQueryParam("university", "");
+      const type = typeSelect.value;
+      const selectedUni = document.getElementById("university-select").value;
 
       if (!type) {
         alert("Please choose Online or In-person to continue.");
@@ -624,95 +643,66 @@ async function initMap() {
       }
 
       if (type === "inperson" && !selectedUni) {
-        alert("Please select your university before continuing.");
-        uniSelect.focus();
+        alert("Please select a university before continuing.");
+        tom.focus();
         return;
       }
 
-      const mainHeading = document.querySelector(".resources-container h1");
-      const mapDescription = document.getElementById("map-description");
-
-      if (type === "online") {
-        mainHeading.textContent = "Online Resources";
-        mapDescription.textContent = "Explore accessible mental health supports you can use anytime, anywhere.";
-      } else if (type === "inperson") {
-        if (selectedUni) {
-          mapDescription.textContent = `Explore trusted in-person resources near ${selectedUni} on the map below.`;
-        }
+      if (type === "inperson") {
+        currentType = "inperson";
+        currentUni = selectedUni;
+      } else {
+        currentType = "online";
+        currentUni = null;
       }
+
+      setQueryParam("access", type);
+      if (type === "inperson") setQueryParam("university", selectedUni);
+      else setQueryParam("university", "");
 
       let filtered = resources;
 
       if (type === "online") {
         filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
 
-        mainHeading.textContent = "Online Resources";
-        mapDescription.textContent = "Explore accessible mental health supports you can use anytime, anywhere.";
-
         document.getElementById("map-container").style.display = "none";
-        document.getElementById("map-description").style.display = "block";
-        document.getElementById("province-name").style.display = "none";
-
         document.getElementById("online-resources-section").style.display = "block";
         document.getElementById("inperson-resources-section").style.display = "none";
-        document.getElementById("search-form").style.display = "none";
 
         renderResourcesOnMap(filtered);
-      }
-
-      else if (type === "inperson") {
-        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
-
-        if (selectedUni) {
-          const uni = universities.find(
-            u => u.Name && u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
-          );
-
-          if (uni && uni.Latitude && uni.Longitude) {
-            filtered = filtered.filter(r =>
-                isWithinDistance(uni, r)
-              );
-            renderUniversitiesOnMap([uni], uni.Name);
-            map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
-            map.setZoom(13);
-            applyCircularPanRestriction(
-              uni.Latitude,
-              uni.Longitude,
-              currentDistanceKm * 1000
-            );
-          }
-        }
-
-        document.getElementById("online-resources-section").style.display = "none";
-        document.getElementById("map-description").style.display = "block";
-        document.getElementById("map-container").style.display = "block";
-        document.getElementById("resource-disclaimer").style.display = "block";
-        document.getElementById("search-form").style.display = "flex";
-        document.getElementById("province-name").style.display = "block";
-
-        document.getElementById("questionnaire").style.display = "none";
-
-        renderResourcesOnMap(filtered);
-
       }
 
       if (type === "inperson") {
-        updateCategoryDropdown(selectedUni);
+        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
+
+        const uni = universities.find(
+          u => u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
+        );
+
+        if (uni && uni.Latitude && uni.Longitude) {
+          selectedUniversityObject = uni;
+
+          filtered = filtered.filter(r =>
+            isWithinDistance(uni, r)
+          );
+
+          renderUniversitiesOnMap([uni], uni.Name);
+          map.setCenter({ lat: uni.Latitude, lng: uni.Longitude });
+          map.setZoom(13);
+        }
+
+        document.getElementById("map-container").style.display = "block";
+        document.getElementById("online-resources-section").style.display = "none";
+        document.getElementById("inperson-resources-section").style.display = "block";
+
+        renderResourcesOnMap(filtered);
       }
 
       document.getElementById("questionnaire").style.display = "none";
       document.getElementById("resourcesList").style.display = "block";
-
-      if (type === "online" || type === "inperson") {
-        backBtn.style.display = "inline-block";
-        backBtn.classList.add("styled-back-btn");
-      }
-
-      document.getElementById("map-description").style.display = "block";
-
+      backBtn.style.display = "inline-block";
     });
   }
-
   if (backBtn) {
     backBtn.addEventListener("click", () => {
       document.querySelector(".resources-container h1").textContent = "Resources";
@@ -770,7 +760,7 @@ async function initMap() {
       r => (r.OnlineOnly || "").toLowerCase() !== "yes");
 
     if (selectedUni !== "all") {
-      const uni = universities.find(u => u.Name === selectedUni);
+      const uni = selectedUniversityObject;
       if (uni && uni.Latitude && uni.Longitude) {
         filteredResources = filteredResources.filter(r =>
           isWithinDistance(uni, r)
@@ -794,8 +784,7 @@ async function initMap() {
     mapCategorySelect.addEventListener("change", () => {
       const selectedCategory = mapCategorySelect.value;
       const typeSelect = document.getElementById("resource-type");
-      const uniSelect = document.getElementById("university-select");
-      const selectedUni = uniSelect ? uniSelect.value : "all";
+      const selectedUni = selectedUniversityObject ? selectedUniversityObject.Name : "all";
       const type = typeSelect ? typeSelect.value : "";
       let filtered = [...resources];
 
@@ -805,7 +794,7 @@ async function initMap() {
         filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
 
         if (selectedUni && selectedUni !== "all") {
-          const uni = universities.find(u => u.Name === selectedUni);
+          const uni = selectedUniversityObject;
           if (uni && uni.Latitude && uni.Longitude) {
             filtered = filtered.filter(r =>
               isWithinDistance(uni, r)

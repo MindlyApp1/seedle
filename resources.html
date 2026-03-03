@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="resources.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://seedle.ca/resources" />
   <meta property="og:title" content="Resources" />
@@ -19,6 +21,9 @@
   <meta property="og:image" content="https://seedle.ca/assets/resourcesPage.png" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
   <script src="resources.js" defer></script>
   <script src="app.js" defer></script>
   <script 
@@ -43,6 +48,7 @@
         <h2>Find the right resources for you</h2>
 
         <form id="questionnaire-form">
+
           <label>
             How would you like to access support?
             <select id="resource-type" required>
@@ -52,16 +58,17 @@
             </select>
           </label>
 
-          <label id="university-wrapper" style="display:none;">
+          <label id="university-label" style="display:none;">
             Which university are you part of?
             <select id="university-select">
-              <option value="" selected disabled>Select a university...</option>
+              <option value="">Select a university...</option>
             </select>
           </label>
 
           <div class="questionnaire-buttons">
             <button type="submit">Show Resources</button>
           </div>
+
         </form>
       </div>
 
@@ -80,7 +87,6 @@
             <span id="clear-search">&times;</span>
           </form>
 
-          <!-- NEW WRAPPER FOR RIGHT CONTROLS -->
           <div class="map-controls">
 
             <select id="distance-filter">
