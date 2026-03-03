@@ -692,6 +692,7 @@ async function initMap() {
         }
 
         document.getElementById("map-container").style.display = "block";
+        document.getElementById("search-form").style.display = "flex";
         document.getElementById("online-resources-section").style.display = "none";
         document.getElementById("inperson-resources-section").style.display = "block";
 
