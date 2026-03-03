@@ -544,18 +544,12 @@ async function initMap() {
   const typeSelect = document.getElementById("resource-type");
   const universityLabel = document.getElementById("university-label");
 
-  tom.disable();
-  universityLabel.style.display = "none";
+  tom.enable();
+  universityLabel.style.display = "block";
 
   typeSelect.addEventListener("change", () => {
-    if (typeSelect.value === "inperson") {
-      tom.enable();
-      universityLabel.style.display = "block";
-    } else {
-      tom.clear();
-      tom.disable();
-      universityLabel.style.display = "none";
-    }
+    tom.enable();
+    universityLabel.style.display = "block";
   });
 
   if (typeSelect.value === "inperson") {
@@ -665,6 +659,17 @@ async function initMap() {
       if (type === "online") {
         filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
 
+        if (selectedUni) {
+          const uni = universities.find(
+            u => u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
+          );
+
+          if (uni) {
+            filtered = filtered.filter(r =>
+              !r.Province || r.Province.toLowerCase() === (uni.Province || "").toLowerCase()
+            );
+          }
+        }
         document.getElementById("map-container").style.display = "none";
         document.getElementById("online-resources-section").style.display = "block";
         document.getElementById("inperson-resources-section").style.display = "none";
