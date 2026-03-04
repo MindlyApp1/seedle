@@ -2,6 +2,7 @@
 const excelFilePath = "assets/seedleResources.xlsx";
 
 let resources = [];
+let generalOnlineResources = [];
 let map;
 let markers = [];
 
@@ -74,17 +75,18 @@ function toTitleCase(str) {
     .replace(/\s+/g, " ")
     .replace(/(^\w|\s\w)/g, m => m.toUpperCase());
 }
-
 async function loadExcel() {
   const response = await fetch(excelFilePath);
-  if (!response.ok) return [];
+  if (!response.ok) return { campusResources: [], generalOnline: [] };
 
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
 
-  let allRows = [];
+  let campusResources = [];
+  let generalOnline = [];
 
   workbook.SheetNames.forEach(sheetName => {
+
     const sheet = workbook.Sheets[sheetName];
     const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
@@ -97,7 +99,6 @@ async function loadExcel() {
 
       return {
         ...row,
-
         DisplayName: toTitleCase(row.Name),
         DisplayCategory: toTitleCase(row.Category),
         DisplayCity: toTitleCase(row.City),
@@ -113,10 +114,19 @@ async function loadExcel() {
         UHIP: row.UHIP !== undefined ? String(row.UHIP).trim() : ""
       };
     });
-    allRows = allRows.concat(cleaned);
+
+    if (sheetName.toLowerCase().includes("online")) {
+      generalOnline = generalOnline.concat(cleaned);
+    } else {
+      campusResources = campusResources.concat(cleaned);
+    }
+
   });
 
-  return allRows;
+  return {
+    campusResources,
+    generalOnline
+  };
 }
 
 async function loadUniversities() {
@@ -521,7 +531,9 @@ async function initMap() {
     });
   }
 
-  resources = await loadExcel();
+  const data = await loadExcel();
+  resources = data.campusResources;
+  generalOnlineResources = data.generalOnline;
   universities = await loadUniversities();
 
   universities.forEach(u => {
@@ -544,8 +556,8 @@ async function initMap() {
   const typeSelect = document.getElementById("resource-type");
   const universityLabel = document.getElementById("university-label");
 
-  tom.enable();
-  universityLabel.style.display = "block";
+  tom.disable();
+  universityLabel.style.display = "none";
 
   typeSelect.addEventListener("change", () => {
     tom.enable();
@@ -657,25 +669,58 @@ async function initMap() {
       let filtered = resources;
 
       if (type === "online") {
-        filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() === "yes");
 
-        if (selectedUni) {
-          const uni = universities.find(
-            u => u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
-          );
+      const campusOnline = resources.filter(r =>
+        (r.OnlineOnly || "").toLowerCase() === "yes"
+      );
 
-          if (uni) {
-            filtered = filtered.filter(r =>
-              !r.Province || r.Province.toLowerCase() === (uni.Province || "").toLowerCase()
-            );
-          }
+      filtered = [
+        ...campusOnline,
+        ...generalOnlineResources
+      ];
+
+      if (selectedUni) {
+
+        const uni = universities.find(
+          u => u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
+        );
+
+        if (uni) {
+
+          const uniProvince = (uni.Province || "").toLowerCase().trim();
+          const uniCity = (uni.City || "").toLowerCase().trim();
+
+          filtered = filtered.filter(r => {
+
+            const rProvince = (r.Province || "").toLowerCase().trim();
+            const rCity = (r.City || "").toLowerCase().trim();
+
+            const provinceMatch =
+              rProvince === "all" ||
+              rProvince === "" ||
+              rProvince === "n/a" ||
+              rProvince === uniProvince;
+
+            const cityMatch =
+              rCity === "all" ||
+              rCity === "" ||
+              rCity === "n/a" ||
+              rCity === uniCity;
+
+            return provinceMatch && cityMatch;
+
+          });
+
         }
-        document.getElementById("map-container").style.display = "none";
-        document.getElementById("online-resources-section").style.display = "block";
-        document.getElementById("inperson-resources-section").style.display = "none";
 
-        renderResourcesOnMap(filtered);
       }
+
+      document.getElementById("map-container").style.display = "none";
+      document.getElementById("online-resources-section").style.display = "block";
+      document.getElementById("inperson-resources-section").style.display = "none";
+
+      renderResourcesOnMap(filtered);
+    }
 
       if (type === "inperson") {
         filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
