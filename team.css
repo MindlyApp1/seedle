@@ -262,8 +262,9 @@
 
 .coordinator-grid {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .coordinator-member {
