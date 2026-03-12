@@ -560,14 +560,17 @@ async function initMap() {
   universityLabel.style.display = "none";
 
   typeSelect.addEventListener("change", () => {
-    tom.enable();
-    universityLabel.style.display = "block";
-  });
 
-  if (typeSelect.value === "inperson") {
-    tom.enable();
-    universityLabel.style.display = "block";
-  }
+    if (typeSelect.value === "inperson") {
+      tom.enable();
+      universityLabel.style.display = "block";
+    } else {
+      tom.disable();
+      tom.clear();
+      universityLabel.style.display = "none";
+    }
+
+  });
   tom.on("focus", function() {
     if (!this.getValue()) {
       this.clear(true);
