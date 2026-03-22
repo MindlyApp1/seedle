@@ -750,6 +750,7 @@ async function initMap() {
         document.getElementById("inperson-resources-section").style.display = "block";
 
         renderResourcesOnMap(filtered);
+        updateCategoryDropdown(currentUni);
       }
 
       document.getElementById("questionnaire").style.display = "none";
