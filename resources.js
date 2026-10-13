@@ -159,6 +159,7 @@ const fixedCategoryColors = {
   "crisis & distress": "#b00302",
   "food insecurity": "#ffc7aa",
   "physical activity": "#bee0f6",
+  "eating disorder support": "#9c4d7d",
   "faith & spiritual": "#c5dce0",
   "housing shelter": "#ebe900",
   "medical clinics": "#f623a6",
@@ -812,7 +813,8 @@ async function initMap() {
     mapCategorySelect.innerHTML = `<option value="all">All Categories</option>`;
 
     let filteredResources = resources.filter(
-      r => (r.OnlineOnly || "").toLowerCase() !== "yes");
+      r => (r.OnlineOnly || "").toLowerCase() !== "yes"
+    );
 
     if (selectedUni !== "all") {
       const uni = selectedUniversityObject;
@@ -823,12 +825,17 @@ async function initMap() {
       }
     }
 
-    const categories = [...new Set(filteredResources.map(r => r.Category).filter(Boolean))];
+    const categories = [...new Set(
+      filteredResources.map(r => r.Category).filter(Boolean)
+    )].sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
 
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat;
-      option.textContent = filteredResources.find(r => r.Category === cat)?.DisplayCategory || cat;
+      option.textContent =
+        filteredResources.find(r => r.Category === cat)?.DisplayCategory || cat;
       mapCategorySelect.appendChild(option);
     });
   }
