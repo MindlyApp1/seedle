@@ -556,13 +556,48 @@ async function initMap() {
 
   const typeSelect = document.getElementById("resource-type");
   const universityLabel = document.getElementById("university-label");
+  const onlineProvinceLabel = document.getElementById("online-province-label");
+  const onlineProvinceSelect = document.getElementById("online-province");
+
+  const provinceOptions = [
+    ["alberta", "Alberta"],
+    ["british columbia", "British Columbia"],
+    ["manitoba", "Manitoba"],
+    ["new brunswick", "New Brunswick"],
+    ["newfoundland and labrador", "Newfoundland and Labrador"],
+    ["northwest territories", "Northwest Territories"],
+    ["nova scotia", "Nova Scotia"],
+    ["nunavut", "Nunavut"],
+    ["ontario", "Ontario"],
+    ["prince edward island", "Prince Edward Island"],
+    ["quebec", "Quebec"],
+    ["saskatchewan", "Saskatchewan"],
+    ["yukon", "Yukon"]
+  ];
+
+  provinceOptions.forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    onlineProvinceSelect.appendChild(option);
+  });
 
   tom.disable();
   universityLabel.style.display = "none";
+  onlineProvinceLabel.style.display = "none";
 
   typeSelect.addEventListener("change", () => {
+    const isOnline = typeSelect.value === "online";
+    const isInPerson = typeSelect.value === "inperson";
 
-    if (typeSelect.value === "inperson") {
+    onlineProvinceLabel.style.display = isOnline ? "block" : "none";
+    onlineProvinceSelect.required = isOnline;
+
+    if (!isOnline) {
+      onlineProvinceSelect.value = "";
+    }
+
+    if (isInPerson) {
       tom.enable();
       universityLabel.style.display = "block";
     } else {
@@ -570,8 +605,8 @@ async function initMap() {
       tom.clear();
       universityLabel.style.display = "none";
     }
-
   });
+
   tom.on("focus", function() {
     if (!this.getValue()) {
       this.clear(true);
@@ -591,6 +626,48 @@ async function initMap() {
       option.textContent = resources.find(r => r.Category === cat)?.DisplayCategory || cat;
       categorySelect.appendChild(option);
     });
+  }
+  function normalizeOnlineProvince(value) {
+    const province = String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+
+    const aliases = {
+      "nb": "new brunswick",
+      "n.b.": "new brunswick",
+      "nwt": "northwest territories",
+      "nt": "northwest territories",
+      "nl": "newfoundland and labrador",
+      "pei": "prince edward island",
+      "p.e.i.": "prince edward island",
+      "qc": "quebec",
+      "québec": "quebec",
+      "bc": "british columbia",
+      "b.c.": "british columbia",
+      "ab": "alberta",
+      "sk": "saskatchewan",
+      "mb": "manitoba",
+      "on": "ontario",
+      "ns": "nova scotia",
+      "yk": "yukon",
+      "northwest terriories": "northwest territories"
+    };
+
+    return aliases[province] || province;
+  }
+
+  function isCanadaWideOnlineResource(resource) {
+    const province = normalizeOnlineProvince(resource.Province);
+
+    return [
+      "all",
+      "canada",
+      "canada-wide",
+      "canada wide",
+      "national",
+      "nationwide"
+    ].includes(province);
   }
 
   const questionnaireForm = document.getElementById("questionnaire-form");
@@ -646,9 +723,16 @@ async function initMap() {
 
       const type = typeSelect.value;
       const selectedUni = document.getElementById("university-select").value;
+      const selectedProvince = onlineProvinceSelect.value;
 
       if (!type) {
         alert("Please choose Online or In-person to continue.");
+        return;
+      }
+      
+      if (type === "online" && !selectedProvince) {
+        alert("Please select your province or territory.");
+        onlineProvinceSelect.focus();
         return;
       }
 
@@ -673,58 +757,33 @@ async function initMap() {
       let filtered = resources;
 
       if (type === "online") {
+        const selectedProvinceNormalized =
+          normalizeOnlineProvince(onlineProvinceSelect.value);
 
-      const campusOnline = resources.filter(r =>
-        (r.OnlineOnly || "").toLowerCase() === "yes"
-      );
+        const onlineCandidates = [
+          ...resources,
+          ...generalOnlineResources
+        ];
 
-      filtered = [
-        ...campusOnline,
-        ...generalOnlineResources
-      ];
+        filtered = onlineCandidates.filter((resource) => {
+          const isOnline =
+            String(resource.OnlineOnly || "").trim().toLowerCase() === "yes";
 
-      if (selectedUni) {
+          const resourceProvince =
+            normalizeOnlineProvince(resource.Province);
 
-        const uni = universities.find(
-          u => u.Name.toLowerCase().trim() === selectedUni.toLowerCase().trim()
-        );
+          return (
+            isOnline &&
+            resourceProvince === selectedProvinceNormalized
+          );
+        });
 
-        if (uni) {
+        document.getElementById("map-container").style.display = "none";
+        document.getElementById("online-resources-section").style.display = "block";
+        document.getElementById("inperson-resources-section").style.display = "none";
 
-          const uniProvince = (uni.Province || "").toLowerCase().trim();
-          const uniCity = (uni.City || "").toLowerCase().trim();
-
-          filtered = filtered.filter(r => {
-
-            const rProvince = (r.Province || "").toLowerCase().trim();
-            const rCity = (r.City || "").toLowerCase().trim();
-
-            const provinceMatch =
-              rProvince === "all" ||
-              rProvince === "" ||
-              rProvince === "n/a" ||
-              rProvince === uniProvince;
-
-            const cityMatch =
-              rCity === "all" ||
-              rCity === "" ||
-              rCity === "n/a" ||
-              rCity === uniCity;
-
-            return provinceMatch && cityMatch;
-
-          });
-
-        }
-
+        renderResourcesOnMap(filtered);
       }
-
-      document.getElementById("map-container").style.display = "none";
-      document.getElementById("online-resources-section").style.display = "block";
-      document.getElementById("inperson-resources-section").style.display = "none";
-
-      renderResourcesOnMap(filtered);
-    }
 
       if (type === "inperson") {
         filtered = filtered.filter(r => (r.OnlineOnly || "").toLowerCase() !== "yes");
