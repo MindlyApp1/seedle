@@ -560,6 +560,7 @@ async function initMap() {
   const onlineProvinceSelect = document.getElementById("online-province");
 
   const provinceOptions = [
+    ["all", "All of Canada"],
     ["alberta", "Alberta"],
     ["british columbia", "British Columbia"],
     ["manitoba", "Manitoba"],
@@ -760,21 +761,26 @@ async function initMap() {
         const selectedProvinceNormalized =
           normalizeOnlineProvince(onlineProvinceSelect.value);
 
+        const isCanadaWideSelected = selectedProvinceNormalized === "canada";
+
         const onlineCandidates = [
           ...resources,
           ...generalOnlineResources
         ];
 
-        filtered = onlineCandidates.filter((resource) => {
+        filtered = onlineCandidates.filter(resource => {
           const isOnline =
             String(resource.OnlineOnly || "").trim().toLowerCase() === "yes";
 
           const resourceProvince =
             normalizeOnlineProvince(resource.Province);
 
-          return (
-            isOnline &&
-            resourceProvince === selectedProvinceNormalized
+          const isAllSelected = selectedProvinceNormalized === "all";
+
+          return isOnline && (
+            isAllSelected ||
+            resourceProvince === selectedProvinceNormalized ||
+            isCanadaWideOnlineResource(resource)
           );
         });
 
