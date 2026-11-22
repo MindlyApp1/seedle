@@ -12,7 +12,7 @@ let universities = [];
 let currentUni = null;
 let currentType = null;
 let circularPanListener = null;
-let currentDistanceKm = 25;
+let currentDistanceKm = 5;
 let selectedUniversityObject = null;
 
 function setQueryParam(key, value) {
